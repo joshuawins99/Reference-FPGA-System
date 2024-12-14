@@ -1,0 +1,13 @@
+#set_io clk_i 20
+set_io reset_i 10
+
+set_io ex_data_o 39
+
+set_io uart_tx_o 2
+set_io uart_rx_i 46
+
+#set_io usb_dp_pull 78
+#set_io usb_dp 79
+#set_io usb_dn 80
+
+#set_frequency clk_i 12

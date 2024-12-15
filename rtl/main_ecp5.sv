@@ -8,7 +8,7 @@ module main_ecp5 (
     input  logic uart_rx_i,
     output logic uart_tx_o
 );
-    localparam FPGAClkSpeed  = 50000000;
+    localparam FPGAClkSpeed  = 48000000;
     localparam BaudRate6502  = 230400;
     localparam address_width = 16;
     localparam data_width    = 8;

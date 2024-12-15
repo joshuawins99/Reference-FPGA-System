@@ -22,8 +22,9 @@ architecture RTL of UART_VHD_6502 is
 begin
     UART_6502_inst : entity work.UART
     generic map (
-        CLK_FREQ => 48000000,
-        BAUD_RATE => 230400
+        CLK_FREQ => 12000000,
+        BAUD_RATE => 230400,
+        OVERSAMPLE_RATE => 16
     )
     port map (
         CLK      => CLK,

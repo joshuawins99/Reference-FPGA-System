@@ -18,10 +18,11 @@ use IEEE.MATH_REAL.ALL;
 
 entity UART is
     Generic (
-        CLK_FREQ      : integer := 24000000;   -- system clock frequency in Hz
-        BAUD_RATE     : integer := 9600; -- baud rate value
-        PARITY_BIT    : string  := "none"; -- type of parity: "none", "even", "odd", "mark", "space"
-        USE_DEBOUNCER : boolean := True    -- enable/disable debouncer
+        CLK_FREQ        : integer := 24000000;   -- system clock frequency in Hz
+        BAUD_RATE       : integer := 9600; -- baud rate value
+        PARITY_BIT      : string  := "none"; -- type of parity: "none", "even", "odd", "mark", "space"
+        USE_DEBOUNCER   : boolean := True;    -- enable/disable debouncer
+        OVERSAMPLE_RATE : integer := 16
     );
     Port (
         -- CLOCK AND RESET
@@ -44,7 +45,7 @@ end entity;
 
 architecture RTL of UART is
 
-    constant OS_CLK_DIV_VAL   : integer := integer(real(CLK_FREQ)/real(16*BAUD_RATE));
+    constant OS_CLK_DIV_VAL   : integer := integer(real(CLK_FREQ)/real(OVERSAMPLE_RATE*BAUD_RATE));
     constant UART_CLK_DIV_VAL : integer := integer(real(CLK_FREQ)/real(OS_CLK_DIV_VAL*BAUD_RATE));
 
     signal os_clk_en            : std_logic;

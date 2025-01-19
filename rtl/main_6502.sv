@@ -11,12 +11,17 @@ module main_6502 #(
     output logic       uart_tx_o,
     input  logic       uart_rx_i,
     output logic [7:0] ex_data_o,
+    input  logic [7:0] ex_data_i,
     output logic       usb_dp_pull,
     inout              usb_dp,
-    inout              usb_dn
+    inout              usb_dn,
+    output logic       spi_clk_o,
+    output logic       spi_mosi_o,
+    input  logic       spi_miso_i
 );
 
-    localparam RAM_Size = 8192;
+    localparam              RAM_Size                   = 8192;
+    localparam logic [15:0] Program_6502_Start_Address = 'h0200;
     
     logic [data_width-1:0]    cpu_data_o;
     logic                     cpu_we_o;
@@ -42,6 +47,8 @@ module main_6502 #(
         version_string_e,
         io_e,
         uart_e,
+        ethernet_e,
+        timer_e,
         special_e,
         num_entries
     } module_bus;
@@ -52,6 +59,8 @@ module main_6502 #(
         add_address('h8000, 'h802A),     //version_string_e
         add_address('h9000, 'h9010),     //io_e
         add_address('h9100, 'h9110),     //uart_e
+        add_address('h9200, 'h9203),     //ethernet_e
+        add_address('h9300, 'h9302),     //timer_e
         add_address('hFFFA, 'hFFFF)      //special_e
     };
 
@@ -104,8 +113,8 @@ module main_6502 #(
     logic [7:0]                 spec_mem [5:0];
 
     initial begin
-        spec_mem[2] = 'h02;
-        spec_mem[3] = 'h00;
+        spec_mem[2] = Program_6502_Start_Address[15:8];
+        spec_mem[3] = Program_6502_Start_Address[7:0];
     end
 
     always_ff @(posedge clk_i) begin
@@ -121,7 +130,7 @@ module main_6502 #(
         end
     end
 
-    cpu cpu1 (
+    cpu_65c02 cpu1 (
         .clk   (clk_i),
         .reset (reset),
         .AB    (address),
@@ -152,7 +161,7 @@ module main_6502 #(
         .data_width     (8),
         .ram_size       (RAM_Size),
         .pre_fill       (1),
-        .pre_fill_start ('h0200),
+        .pre_fill_start (Program_6502_Start_Address),
         .pre_fill_file  ("../cc65/mem_init.mem")
     ) ram1 (
         .clk            (clk_i),
@@ -186,12 +195,46 @@ module main_6502 #(
         .address_i       (address),
         .data_i          (cpu_data_o),
         .data_o          (data_reg_inputs[io_e]),
-        .ex_data_i       ('0),
+        .ex_data_i       (ex_data_i),
         .ex_data_o       (ex_data_o),
         .rd_wr_i         (cpu_we_o),
         .irq_o           (irq),
         .take_controlr_o (),
         .take_controlw_o ()
+    );
+
+    spi_master #(
+        .BaseAddress         (get_address_start(ethernet_e)),
+        .BytesPerTransaction (4),
+        .FPGAClkSpeed        (FPGAClkSpeed),
+        .SPIClkSpeed         (1000000),
+        .address_width       (16),
+        .data_width          (8)
+    ) ethernet_spi_1 (
+        .clk_i               (clk_i),
+        .reset_i             (reset || reset_i),
+        .address_i           (address),
+        .data_i              (cpu_data_o),
+        .data_o              (data_reg_inputs[ethernet_e]),
+        .rd_wr_i             (cpu_we_o),
+        .spi_clk_o           (spi_clk_o),
+        .spi_miso_i          (spi_miso_i),
+        .spi_mosi_o          (spi_mosi_o)
+    );
+
+    timer_6502 #(
+        .BaseAddress   (get_address_start(timer_e)),
+        .FPGAClkSpeed  (FPGAClkSpeed),
+        .TimerClkSpeed (10000),
+        .address_width (16),
+        .data_width    (8)
+    ) timer_6502_1 (
+        .clk_i         (clk_i),
+        .reset_i       (reset || reset_i),
+        .address_i     (address),
+        .data_i        (cpu_data_o),
+        .data_o        (data_reg_inputs[timer_e]),
+        .rd_wr_i       (cpu_we_o)
     );
 
 `ifndef USB_UART

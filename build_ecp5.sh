@@ -1,5 +1,5 @@
 #!/bin/bash
-rm -f main.bin
+rm -f main.bin resized_flash.bin fpga_image.h
 rm -f rtl/uart_vhd_6502.v
 python3 update_vhdl_params.py main_ecp5.sv
 cd cc65

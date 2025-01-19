@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include <6502.h>
 #include <peekpoke.h>
-#include "io.h"
 
 #define STACK_SIZE 256  // vary this depending how busy your IRQ method is
 

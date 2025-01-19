@@ -1,6 +1,6 @@
 LOCATE COMP "clk_i" SITE "C7";
 IOBUF PORT "clk_i" IO_TYPE=LVTTL33;
-#FREQUENCY PORT "clk_i" 50 MHZ;
+FREQUENCY PORT "clk_i" 40 MHZ;
 
 LOCATE COMP "reset_i" SITE "A2";
 IOBUF PORT "reset_i" IO_TYPE=LVTTL33;
@@ -22,3 +22,15 @@ IOBUF PORT "usb_dp" IO_TYPE=LVTTL33;
 
 LOCATE COMP "usb_dn" SITE "K4";
 IOBUF PORT "usb_dn" IO_TYPE=LVTTL33;
+
+LOCATE COMP "spi_clk_o" SITE "P13";
+IOBUF PORT "spi_clk_o" IO_TYPE=LVTTL33;
+
+LOCATE COMP "spi_mosi_o" SITE "R12";
+IOBUF PORT "spi_mosi_o" IO_TYPE=LVTTL33;
+
+LOCATE COMP "spi_miso_i" SITE "N13";
+IOBUF PORT "spi_miso_i" IO_TYPE=LVTTL33;
+
+LOCATE COMP "ex_data_i" SITE "C2";
+IOBUF PORT "ex_data_i" IO_TYPE=LVTTL33;

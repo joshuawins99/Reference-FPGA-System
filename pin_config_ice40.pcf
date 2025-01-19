@@ -6,6 +6,10 @@ set_io ex_data_o 39
 set_io uart_tx_o 2
 set_io uart_rx_i 46
 
+set_io spi_clk_o 28
+set_io spi_mosi_o 38
+set_io spi_miso_i 42
+
 #set_io usb_dp_pull 78
 #set_io usb_dp 79
 #set_io usb_dn 80

@@ -90,6 +90,8 @@ set_global_assignment -name VERILOG_FILE ../rtl/modules/usb_serial/serial.v
 set_global_assignment -name VERILOG_FILE ../rtl/modules/usb_serial/edge_detect.v
 set_global_assignment -name VERILOG_FILE ../rtl/pll_cycloneiv.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/io_6502.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/spi_master.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/timer_6502.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/async_fifo.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/fifomem.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/rptr_empty.v
@@ -100,7 +102,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/wptr_fu
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/single_port_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/bram_contained.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/6502/ALU.v
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/6502/cpu.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/6502/cpu_65c02.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/version_string.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/main_6502.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/main_cycloneiv.sv

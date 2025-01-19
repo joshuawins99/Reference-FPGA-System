@@ -1,5 +1,5 @@
 #!/bin/bash
-rm -f main.bin
+rm -f main.bin resized_flash.bin fpga_image.h
 python3 update_vhdl_params.py main_ice40.sv
 cd cc65
 ./build.sh

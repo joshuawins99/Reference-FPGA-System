@@ -3,7 +3,10 @@ module main_ice40 (
     input  logic reset_i,
     output logic uart_tx_o,
     input  logic uart_rx_i,
-    output logic ex_data_o
+    output logic ex_data_o,
+    output logic spi_clk_o,
+    output logic spi_mosi_o,
+    input  logic spi_miso_i
     //output logic usb_dp_pull,
     //inout  logic usb_dp,
     //inout logic usb_dn
@@ -40,7 +43,7 @@ module main_ice40 (
     // );
 
     logic [7:0] ex_data;
-    assign ex_data_o = ex_data[0];
+    assign ex_data_o = !ex_data[0];
 
     main_6502 #(
         .FPGAClkSpeed  (FPGAClkSpeed),
@@ -53,7 +56,10 @@ module main_ice40 (
         .reset_i       ('0),
         .ex_data_o     (ex_data),
         .uart_tx_o     (uart_tx_o),
-        .uart_rx_i     (uart_rx_i)
+        .uart_rx_i     (uart_rx_i),
+        .spi_clk_o     (spi_clk_o),
+        .spi_mosi_o    (spi_mosi_o),
+        .spi_miso_i    (spi_miso_i)
         //.usb_dp_pull   (usb_dp_pull),
         //.usb_dp        (usb_dp),
         //.usb_dn        (usb_dn)

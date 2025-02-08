@@ -33,9 +33,9 @@ void main () {
     set_irq(IRQ, TempStack, STACK_SIZE);
     CLI();
     WriteIO(IO_6502_BaseAddress+2, 1); //Set Interrupt Mask to Bit 0
+    DACWrite("0"); //Initialize DAC Output to 0
+    Sleep(50); //Wait after W5500 Reset
     EthInitialize(0);
     OpenEthUDPSocket(0, 1200, 1200, dest_ip);
     loop();
 }
-
-

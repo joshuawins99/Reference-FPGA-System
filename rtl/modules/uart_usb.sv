@@ -20,7 +20,6 @@ module uart_usb #(
 
     logic [7:0] transmit_data = '0;
     logic tx_start = 1'b0;
-    logic tx_start_reg = 1'b0;
     logic tx_done;
     logic tx_busy;
     logic rx_done;
@@ -146,7 +145,7 @@ module uart_usb #(
             transmit_data_48_hold <= transmit_data_48;
             fifo_tx_pop <= 1'b0;
             tx_start_ready <= 1'b1;
-        end else if (fifo_empty_tran == 1'b0 && tx_start_ready <= 1'b0) begin
+        end else if (fifo_empty_tran == 1'b0 && tx_start_ready == 1'b0) begin
             fifo_tx_pop <= 1'b1;
         end else begin
             tx_start_ready <= tx_start_ready;

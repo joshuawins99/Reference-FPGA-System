@@ -14,7 +14,7 @@ if [ "$1" = -build ]; then
     else
         echo -n '"' >> version_string.svh
         echo -n "DEV " >> version_string.svh
-        echo -n "1234567" >> version_string.svh
+        echo -n $2 >> version_string.svh
     fi
 else 
     echo -n '"' >> version_string.svh
@@ -27,7 +27,7 @@ echo -n ' ' >> version_string.svh
 date --date 'now' '+%a %b %d %r %Z %Y' | sed -e 's/$/"/' -e 's/,/","/g' >> version_string.svh
 ghdl --synth --out=verilog modules/uart_vhdl/*.vhd -e UART_VHD_6502 > uart_vhd_6502.v
 yosys -q -p 'abc_new; read_verilog -sv -DUSB_UART -nooverwrite main_ecp5.sv main_6502.sv modules/*.* modules/6502/* modules/async_fifo/* modules/usb_serial/* uart_vhd_6502.v pll_ecp5.v; hierarchy -top main_ecp5; synth_ecp5 -top main_ecp5 -json main.json'
-nextpnr-ecp5 --25k --package CABGA256 --speed 6 --json main.json --textcfg main.config --lpf ../pin_config_ecp5.lpf --lpf-allow-unconstrained --randomize-seed --sdc ../main_ecp5.sdc
+nextpnr-ecp5 --25k --package CABGA256 --speed 6 --json main.json --textcfg main.config --lpf ../pin_config_ecp5.lpf --lpf-allow-unconstrained --randomize-seed
 ecppack --compress --bit main.bit main.config
 rm -f main.config main.json
 mv main.bit ../main.bin

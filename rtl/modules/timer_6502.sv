@@ -47,6 +47,9 @@ module timer_6502 #(
                             data_o <= '0;
                         end
                     end
+                    default : begin
+                        data_o <= '0;
+                    end
                 endcase
             end
         end else begin
@@ -65,6 +68,9 @@ module timer_6502 #(
                     end
                     Start_Timer_Address : begin
                         start_timer <= 1'b1;
+                    end
+                    default : begin
+                        tick_count_value <= tick_count_value;
                     end
                 endcase
             end
@@ -86,7 +92,7 @@ module timer_6502 #(
                 end
                 count_e : begin
                     if (slow_clk_pulse == 1'b1) begin
-                        if (tick_counter < tick_count_value - CalibrationFactor) begin
+                        if (tick_counter < (tick_count_value - CalibrationFactor)) begin
                             tick_counter <= tick_counter + 1'b1;
                         end else begin
                             timer_done_pulse <= 1'b1;

@@ -1,0 +1,40 @@
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Warning (10935): Verilog HDL Casex/Casez warning at cpu_65c02.v(*): casex/casez item expression overlaps with a previous casex/casez item expression File: */rtl/modules/6502/cpu_65c02.v*
+Warning (10935): Verilog HDL Casex/Casez warning at cpu_65c02.v(*): casex/casez item expression overlaps with a previous casex/casez item expression File: */rtl/modules/6502/cpu_65c02.v*
+Warning (10763): Verilog HDL warning at cpu_65c02.v(*): case statement has overlapping case item expressions with non-constant or don't care bits - unable to check case statement for completeness File: */rtl/modules/6502/cpu_65c02.v*
+Warning (10230): Verilog HDL assignment warning at ALU.v(*): truncated value with size 32 to match size of target (1) File: */rtl/modules/6502/ALU.v*
+Warning (10230): Verilog HDL assignment warning at ALU.v(*): truncated value with size 9 to match size of target (8) File: */rtl/modules/6502/ALU.v*
+Warning (10850): Verilog HDL warning at single_port_ram.sv(*): number of words (*) in memory file does not match the number of elements in the address range * File: */rtl/modules/single_port_ram.sv*
+Warning (10036): Verilog HDL or VHDL warning at version_string.sv(*): object "date" assigned a value but never read File: */rtl/modules/version_string.sv*
+Warning (10230): Verilog HDL assignment warning at spi_master_burst.sv(*): truncated value with size * to match size of target (8) File: */rtl/modules/spi_master_burst.sv*
+Warning (10230): Verilog HDL assignment warning at usb_reset_det.v(*): truncated value with size 32 to match size of target (17) File: */rtl/modules/usb_serial/usb_reset_det.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_uart_core.v(*): object "host_presence_timer" assigned a value but never read File: */rtl/modules/usb_serial/usb_uart_core.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_serial_ctrl_ep.v(*): object "data_stage_end" assigned a value but never read File: */rtl/modules/usb_serial/usb_serial_ctrl_ep.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_serial_ctrl_ep.v(*): object "wIndex" assigned a value but never read File: */rtl/modules/usb_serial/usb_serial_ctrl_ep.v*
+Warning (10230): Verilog HDL assignment warning at usb_serial_ctrl_ep.v(*): truncated value with size * to match size of target (*) File: */rtl/modules/usb_serial/usb_serial_ctrl_ep.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_uart_core.v(*): object "host_presence_timeout" assigned a value but never read File: */rtl/modules/usb_serial/usb_uart_core.v*
+Warning (10230): Verilog HDL assignment warning at usb_uart_bridge_ep.v(*): truncated value with size * to match size of target (*) File: */rtl/modules/usb_serial/usb_uart_bridge_ep.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_in_pe.v(*): object "in_xfr_start" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_in_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_in_pe.v(*): object "endp_ready_to_send" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_in_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_in_pe.v(*): object "current_ep_get_addr" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_in_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_in_pe.v(*): object "current_ep_put_addr" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_in_pe.v*
+Warning (10230): Verilog HDL assignment warning at usb_fs_in_pe.v(*): truncated value with size * to match size of target (*) File: */rtl/modules/usb_serial/usb_fs_in_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_out_pe.v(*): object "out_ep_data_avail_i" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_out_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_out_pe.v(*): object "out_ep_data_avail_j" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_out_pe.v*
+Warning (10036): Verilog HDL or VHDL warning at usb_fs_out_pe.v(*): object "current_ep_state" assigned a value but never read File: */rtl/modules/usb_serial/usb_fs_out_pe.v*
+Warning (10230): Verilog HDL assignment warning at usb_fs_out_pe.v(*): truncated value with size 32 to match size of target (*) File: */rtl/modules/usb_serial/usb_fs_out_pe.v*
+Warning (10230): Verilog HDL assignment warning at usb_fs_rx.v(*): truncated value with size * to match size of target (*) File: */rtl/modules/usb_serial/usb_fs_rx.v*
+Warning (10230): Verilog HDL assignment warning at usb_fs_tx.v(*): truncated value with size * to match size of target (*) File: */rtl/modules/usb_serial/usb_fs_tx.v*
+Warning (276027): Inferred dual-clock RAM node "main_6502:m1|spec_mem_rtl_0" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design.
+Warning (276020): Inferred RAM node "main_6502:m1|spi_master_burst:adc_spi_1|async_fifo:async_fifo_spi_6502_1|fifomem:fifomem|mem_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
+Warning (276027): Inferred dual-clock RAM node "main_6502:m1|uart_usb:uart_6502_1|async_fifo:async_fifo_uart_recv_1|fifomem:fifomem|mem_rtl_0" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design.
+Warning (276027): Inferred dual-clock RAM node "main_6502:m1|uart_usb:uart_6502_1|async_fifo:async_fifo_uart_tran_1|fifomem:fifomem|mem_rtl_0" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design.
+Warning (127007): Memory Initialization File or Hexadecimal (Intel-Format) * contains "don't care" values -- overwriting them with 0s*
+Warning (12241): * hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Warning (292013): Feature LogicLock is only available with a valid subscription license. You can purchase a software subscription to gain full access to this feature.
+Critical Warning (332168): The following clock transfers have no clock uncertainty assignment. For more accurate results, apply clock uncertainty assignments or use the derive_clock_uncertainty command.
+    Critical Warning (332169): From*
+Warning (169177): * pins must meet Intel FPGA requirements for 3.3-, 3.0-, and 2.5-V interfaces. For more information, refer to AN 447: Interfacing Cyclone IV E Devices with 3.3/3.0/2.5-V LVTTL/LVCMOS I/O Systems.
+Critical Warning (332148): Timing requirements not met
+#Warning (10034): Output port "uart_tx_o" at main_6502.sv(*) has no driver File: */rtl/main_6502.sv*
+Warning (15714): Some pins have incomplete I/O assignments. Refer to the I/O Assignment Warnings report for details

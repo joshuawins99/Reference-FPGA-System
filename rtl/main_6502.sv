@@ -1,5 +1,9 @@
 module main_6502 #(
     parameter FPGAClkSpeed = 50000000, //In Hz
+    parameter ETHSPIClkSpeed = 1000000,
+    parameter DACSPIClkSpeed = 1000000,
+    parameter ADCSPIClkSpeed = 1000000,
+    parameter MaxADCBurstReadings = 13,
     parameter BaudRate6502 = 230400,
     parameter address_width = 16,
     parameter data_width    = 8
@@ -15,13 +19,22 @@ module main_6502 #(
     output logic       usb_dp_pull,
     inout              usb_dp,
     inout              usb_dn,
-    output logic       spi_clk_o,
-    output logic       spi_mosi_o,
-    input  logic       spi_miso_i
+    output logic       eth_sclk_o,
+    output logic       eth_mosi_o,
+    input  logic       eth_miso_i,
+    output logic       eth_reset_o,
+    output logic       dac_sclk_o,
+    output logic       dac_mosi_o,
+    output logic       dac_sync_no,
+    output logic       adc_sclk_o,
+    input  logic       adc_miso_i,
+    output logic       adc_sync_no
 );
 
-    localparam              RAM_Size                   = 8192;
+    localparam              RAM_Size                   = 12288;
     localparam logic [15:0] Program_6502_Start_Address = 'h0200;
+    
+    localparam VersionStringSize = 64;
     
     logic [data_width-1:0]    cpu_data_o;
     logic                     cpu_we_o;
@@ -46,8 +59,11 @@ module main_6502 #(
         ram_e = 0,
         version_string_e,
         io_e,
+        reset_e,
         uart_e,
         ethernet_e,
+        dac_e,
+        adc_e,
         timer_e,
         special_e,
         num_entries
@@ -56,12 +72,15 @@ module main_6502 #(
     //Each enumeration gets a start and end address with the start address on the left and the end address on the right
     localparam [2*(address_width*num_entries)-1:0] module_addresses = {
         add_address('h0000, RAM_Size-1), //ram_e
-        add_address('h8000, 'h802A),     //version_string_e
-        add_address('h9000, 'h9010),     //io_e
-        add_address('h9100, 'h9110),     //uart_e
-        add_address('h9200, 'h9203),     //ethernet_e
-        add_address('h9300, 'h9302),     //timer_e
-        add_address('hFFFA, 'hFFFF)      //special_e
+        add_address('h8000, 'h8000+(VersionStringSize-1)),  //version_string_e
+        add_address('h9000, 'h9003),                        //io_e
+        add_address('h9004, 'h9007),                        //reset_e
+        add_address('h9100, 'h9104),                        //uart_e
+        add_address('h9200, 'h9203),                        //ethernet_e
+        add_address('h9210, 'h9213),                        //dac_e
+        add_address('h9220, 'h9224),                        //adc_e
+        add_address('h9300, 'h9302),                        //timer_e
+        add_address('hFFFA, 'hFFFF)                         //special_e
     };
 
     typedef logic [data_width-1:0] data_reg_inputs_t [0:num_entries-1];
@@ -108,7 +127,8 @@ module main_6502 #(
 //************************************************************************************************************
 
     logic                       reset = 1'b1;
-    logic [7:0]                 reset_counter = '0;
+    logic [63:0]                reset_counter = '0;
+    logic [7:0]                 reset_int;
 
     logic [7:0]                 spec_mem [5:0];
 
@@ -118,13 +138,18 @@ module main_6502 #(
     end
 
     always_ff @(posedge clk_i) begin
-        if (reset_i == 1'b1) begin
+        if (reset_i == 1'b1 || reset_int != 0) begin
             usb_dp_pull <= 1'b0;
-        end else if (reset_counter >= 100) begin
+            eth_reset_o <= 1'b0;
+            reset <= 1'b1;
+            reset_counter <= '0;
+        end else if (reset_counter >= FPGAClkSpeed) begin
             reset <= 1'b0;
+            eth_reset_o <= 1'b1;
             usb_dp_pull <= 1'b1;
         end else begin
             reset <= 1'b1;
+            eth_reset_o <= 1'b0;
             usb_dp_pull <= 1'b0;
             reset_counter <= reset_counter + 1'b1;
         end
@@ -173,7 +198,7 @@ module main_6502 #(
 
     version_string #(
         .BaseAddress         (get_address_start(version_string_e)),
-        .NumCharacters       (44),
+        .NumCharacters       (VersionStringSize),
         .CharsPerTransaction (1),
         .address_width       (address_width),
         .data_width          (data_width)
@@ -191,7 +216,7 @@ module main_6502 #(
         .data_width      (8)
     ) io_6502_1 (
         .clk_i           (clk_i),
-        .reset_i         (reset || reset_i),
+        .reset_i         (reset),
         .address_i       (address),
         .data_i          (cpu_data_o),
         .data_o          (data_reg_inputs[io_e]),
@@ -203,23 +228,83 @@ module main_6502 #(
         .take_controlw_o ()
     );
 
+    io_6502 #(
+        .BaseAddress     (get_address_start(reset_e)),
+        .address_width   (16),
+        .data_width      (8)
+    ) io_6502_reset_1 (
+        .clk_i           (clk_i),
+        .reset_i         (reset),
+        .address_i       (address),
+        .data_i          (cpu_data_o),
+        .data_o          (data_reg_inputs[reset_e]),
+        .ex_data_i       ('0),
+        .ex_data_o       (reset_int),
+        .rd_wr_i         (cpu_we_o),
+        .irq_o           (),
+        .take_controlr_o (),
+        .take_controlw_o ()
+    );
+
     spi_master #(
         .BaseAddress         (get_address_start(ethernet_e)),
         .BytesPerTransaction (4),
         .FPGAClkSpeed        (FPGAClkSpeed),
-        .SPIClkSpeed         (1000000),
+        .SPIClkSpeed         (ETHSPIClkSpeed),
         .address_width       (16),
         .data_width          (8)
     ) ethernet_spi_1 (
         .clk_i               (clk_i),
-        .reset_i             (reset || reset_i),
+        .reset_i             (reset),
         .address_i           (address),
         .data_i              (cpu_data_o),
         .data_o              (data_reg_inputs[ethernet_e]),
         .rd_wr_i             (cpu_we_o),
-        .spi_clk_o           (spi_clk_o),
-        .spi_miso_i          (spi_miso_i),
-        .spi_mosi_o          (spi_mosi_o)
+        .spi_clk_o           (eth_sclk_o),
+        .spi_miso_i          (eth_miso_i),
+        .spi_mosi_o          (eth_mosi_o),
+        .spi_sync_no         ()
+    );
+
+    spi_master #(
+        .BaseAddress         (get_address_start(dac_e)),
+        .BytesPerTransaction (3),
+        .FPGAClkSpeed        (FPGAClkSpeed),
+        .SPIClkSpeed         (DACSPIClkSpeed),
+        .address_width       (16),
+        .data_width          (8)
+    ) dac_spi_1 (
+        .clk_i               (clk_i),
+        .reset_i             (reset),
+        .address_i           (address),
+        .data_i              (cpu_data_o),
+        .data_o              (data_reg_inputs[dac_e]),
+        .rd_wr_i             (cpu_we_o),
+        .spi_clk_o           (dac_sclk_o),
+        .spi_miso_i          ('0),
+        .spi_mosi_o          (dac_mosi_o),
+        .spi_sync_no         (dac_sync_no)
+    );
+
+    spi_master_burst #(
+        .BaseAddress         (get_address_start(adc_e)),
+        .BytesPerTransaction (2),
+        .MaxADCBurstReadings (MaxADCBurstReadings),
+        .FPGAClkSpeed        (FPGAClkSpeed),
+        .SPIClkSpeed         (ADCSPIClkSpeed),
+        .address_width       (16),
+        .data_width          (8)
+    ) adc_spi_1 (
+        .clk_i               (clk_i),
+        .reset_i             (reset),
+        .address_i           (address),
+        .data_i              (cpu_data_o),
+        .data_o              (data_reg_inputs[adc_e]),
+        .rd_wr_i             (cpu_we_o),
+        .spi_clk_o           (adc_sclk_o),
+        .spi_miso_i          (adc_miso_i),
+        .spi_mosi_o          (),
+        .spi_sync_no         (adc_sync_no)
     );
 
     timer_6502 #(
@@ -230,7 +315,7 @@ module main_6502 #(
         .data_width    (8)
     ) timer_6502_1 (
         .clk_i         (clk_i),
-        .reset_i       (reset || reset_i),
+        .reset_i       (reset),
         .address_i     (address),
         .data_i        (cpu_data_o),
         .data_o        (data_reg_inputs[timer_e]),
@@ -260,7 +345,7 @@ module main_6502 #(
     ) uart_6502_1 (
         .clk_i           (clk_i),
         .clk_48_i        (clk_48_i),
-        .reset_i         (reset_i || reset),
+        .reset_i         (reset),
         .address_i       (address),
         .data_i          (cpu_data_o),
         .data_o          (data_reg_inputs[uart_e]),

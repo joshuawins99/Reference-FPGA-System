@@ -8,9 +8,16 @@ module main_ecp5 (
     inout  logic usb_dn,
     input  logic uart_rx_i,
     output logic uart_tx_o,
-    output logic spi_clk_o,
-    output logic spi_mosi_o,
-    input  logic spi_miso_i
+    output logic eth_sclk_o,
+    output logic eth_mosi_o,
+    input  logic eth_miso_i,
+    output logic eth_reset_o,
+    output logic dac_sclk_o,
+    output logic dac_mosi_o,
+    output logic dac_sync_no,
+    output logic adc_sclk_o,
+    input  logic adc_miso_i,
+    output logic adc_sync_no
 );
     localparam FPGAClkSpeed  = 40000000;
     localparam BaudRate6502  = 230400;
@@ -29,25 +36,35 @@ module main_ecp5 (
     assign ex_data_o = ex_data[0];
 
     main_6502 #(
-        .FPGAClkSpeed  (FPGAClkSpeed),
-        .BaudRate6502  (BaudRate6502),
-        .address_width (address_width),
-        .data_width    (data_width)
+        .FPGAClkSpeed        (FPGAClkSpeed),
+        .ETHSPIClkSpeed      (5000000),
+        .DACSPIClkSpeed      (5000000),
+        .ADCSPIClkSpeed      (2500000),
+        .MaxADCBurstReadings (13), //4096 Readings
+        .BaudRate6502        (BaudRate6502),
+        .address_width       (address_width),
+        .data_width          (data_width)
     ) m1 (
-        .clk_i         (clk_i),
-        .clk_48_i      (clk_48),
-        .reset_i       ('0),
-        .ex_data_i     ({7'b0,ex_data_i}),
-        .ex_data_o     (ex_data),
-        .uart_tx_o     (uart_tx_o),
-        .uart_rx_i     (uart_rx_i),
-        .usb_dp_pull   (usb_dp_pull),
-        .usb_dp        (usb_dp),
-        .usb_dn        (usb_dn),
-        .spi_clk_o     (spi_clk_o),
-        .spi_mosi_o    (spi_mosi_o),
-        .spi_miso_i    (spi_miso_i)
+        .clk_i               (clk_i),
+        .clk_48_i            (clk_48),
+        .reset_i             (reset_i),
+        .ex_data_i           ({7'b0,ex_data_i}),
+        .ex_data_o           (ex_data),
+        .uart_tx_o           (uart_tx_o),
+        .uart_rx_i           (uart_rx_i),
+        .usb_dp_pull         (usb_dp_pull),
+        .usb_dp              (usb_dp),
+        .usb_dn              (usb_dn),
+        .eth_sclk_o          (eth_sclk_o),
+        .eth_mosi_o          (eth_mosi_o),
+        .eth_miso_i          (eth_miso_i),
+        .eth_reset_o         (eth_reset_o),
+        .dac_sclk_o          (dac_sclk_o),
+        .dac_mosi_o          (dac_mosi_o),
+        .dac_sync_no         (dac_sync_no),
+        .adc_sclk_o          (adc_sclk_o),
+        .adc_miso_i          (adc_miso_i),
+        .adc_sync_no         (adc_sync_no)
     );
-
-
+    
 endmodule

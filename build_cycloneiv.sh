@@ -16,7 +16,7 @@ if [ "$1" = -build ]; then
     else
         echo -n '"' >> version_string.svh
         echo -n "DEV " >> version_string.svh
-        echo -n "1234567" >> version_string.svh
+        echo -n $2 >> version_string.svh
     fi
 else 
     echo -n '"' >> version_string.svh

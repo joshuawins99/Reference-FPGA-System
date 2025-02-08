@@ -16,4 +16,6 @@ cycloneiv_quartus/db/
 cycloneiv_quartus/incremental_db/
 cycloneiv_quartus/output_files/
 main.sof
+result_*.txt
+output_*.txt
 

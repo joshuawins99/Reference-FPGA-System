@@ -33,7 +33,7 @@ module version_string #(
         data = '0;
         if (rd_wr_i == 1'b0) begin
             if (address_i >= Version_String && address_i <= Version_String+(NumCharacters/CharsPerTransaction)) begin
-                data = get_characters(address_i-Version_String);
+                data = get_characters((NumCharacters-1)-(address_i-Version_String));
             end
         end
     end

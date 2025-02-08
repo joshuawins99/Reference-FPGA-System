@@ -7,6 +7,6 @@
 #include <6502.h>
 #include <peekpoke.h>
 
-#define STACK_SIZE 256  // vary this depending how busy your IRQ method is
+#define STACK_SIZE 512  // vary this depending how busy your IRQ method is
 
 unsigned char TempStack[STACK_SIZE];

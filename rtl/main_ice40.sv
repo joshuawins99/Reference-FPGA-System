@@ -4,12 +4,9 @@ module main_ice40 (
     output logic uart_tx_o,
     input  logic uart_rx_i,
     output logic ex_data_o,
-    output logic spi_clk_o,
-    output logic spi_mosi_o,
-    input  logic spi_miso_i
-    //output logic usb_dp_pull,
-    //inout  logic usb_dp,
-    //inout logic usb_dn
+    output logic eth_sclk_o,
+    output logic eth_mosi_o,
+    input  logic eth_miso_i
 );
     localparam FPGAClkSpeed  = 12000000;
     localparam BaudRate6502  = 230400;
@@ -46,23 +43,35 @@ module main_ice40 (
     assign ex_data_o = !ex_data[0];
 
     main_6502 #(
-        .FPGAClkSpeed  (FPGAClkSpeed),
-        .BaudRate6502  (BaudRate6502),
-        .address_width (address_width),
-        .data_width    (data_width)
+        .FPGAClkSpeed        (FPGAClkSpeed),
+        .ETHSPIClkSpeed      (1000000),
+        .DACSPIClkSpeed      (1000000),
+        .ADCSPIClkSpeed      (1000000),
+        .MaxADCBurstReadings (9), //256 Readings
+        .BaudRate6502        (BaudRate6502),
+        .address_width       (address_width),
+        .data_width          (data_width)
     ) m1 (
-        .clk_i         (clk),
-        //.clk_48_i      (clk_48),
-        .reset_i       ('0),
-        .ex_data_o     (ex_data),
-        .uart_tx_o     (uart_tx_o),
-        .uart_rx_i     (uart_rx_i),
-        .spi_clk_o     (spi_clk_o),
-        .spi_mosi_o    (spi_mosi_o),
-        .spi_miso_i    (spi_miso_i)
-        //.usb_dp_pull   (usb_dp_pull),
-        //.usb_dp        (usb_dp),
-        //.usb_dn        (usb_dn)
+        .clk_i               (clk),
+        .clk_48_i            (),
+        .reset_i             ('0),
+        .ex_data_i           ('0),
+        .ex_data_o           (ex_data),
+        .uart_tx_o           (uart_tx_o),
+        .uart_rx_i           (uart_rx_i),
+        .usb_dp_pull         (),
+        .usb_dp              (),
+        .usb_dn              (),
+        .eth_sclk_o          (eth_sclk_o),
+        .eth_mosi_o          (eth_mosi_o),
+        .eth_miso_i          (eth_miso_i),
+        .eth_reset_o         (),
+        .dac_sclk_o          (),
+        .dac_mosi_o          (),
+        .dac_sync_no         (),
+        .adc_sclk_o          (),
+        .adc_miso_i          ('0),
+        .adc_sync_no         ()
     );
 
 

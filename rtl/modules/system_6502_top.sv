@@ -186,7 +186,7 @@ module system_6502_top #(
     cpu cpu1 (
         .clk   (clk_i),
         .reset (cpu_reset_reg || reset), //Add reset_i
-        .AB    (address),
+        .AB    (cpu_addr),
         .DI    (cpu_data_i),
         .DO    (cpu_data_o),
         .WE    (cpu_we_o),

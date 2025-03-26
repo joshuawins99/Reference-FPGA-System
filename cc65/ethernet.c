@@ -78,7 +78,7 @@ void EthRecvUDP(unsigned char socketnum) {
     EthTransfer(w5500socket[socket_command_e], w5500write[rwptr], 0x40); // Send RECV Command
 
     commandOutput = executeCommandsSerial(&received_packet_data[0]);
-    if (commandOutput != "") {
+    if (commandOutput != NULL) {
         EthSendUDP(0, &commandOutput[0]);
     }
 }

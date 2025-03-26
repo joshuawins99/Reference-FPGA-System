@@ -38,3 +38,4 @@ Warning (169177): * pins must meet Intel FPGA requirements for 3.3-, 3.0-, and 2
 Critical Warning (332148): Timing requirements not met
 #Warning (10034): Output port "uart_tx_o" at main_6502.sv(*) has no driver File: */rtl/main_6502.sv*
 Warning (15714): Some pins have incomplete I/O assignments. Refer to the I/O Assignment Warnings report for details
+io.c:*: Warning: Incompatible pointer conversion to 'char *(*)(char *)' from 'char *(*)(void)'

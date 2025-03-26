@@ -51,7 +51,7 @@ char* ReadADCData(char *NumReadingsChar) {
     unsigned NumReadings = atoi(NumReadingsChar);
     unsigned char upperbits;
     unsigned char lowerbits;
-    char returnval[6];
+    static char returnval[6];
     unsigned value;
     unsigned i;
 
@@ -66,7 +66,7 @@ char* ReadADCData(char *NumReadingsChar) {
         } 
     }
     if (NumReadings > 1) {
-        return "";
+        return NULL;
     } else {
         return returnval;
     }
@@ -110,7 +110,7 @@ char* ReadVersion() {
 }
 
 char* readFPGA(char *addr) {
-    char rd_data[3];
+    static char rd_data[3];
 
     sprintf(rd_data, "%d", ReadIO(atoi(addr)));
     return rd_data;
@@ -120,6 +120,14 @@ void writeFPGA(char *addr, char *data) {
     WriteIO(atoi(addr), atoi(data));
 }
 
+typedef char* (*command_func)(char*);
+
+typedef struct {
+    const char *command;
+    command_func func;
+    unsigned char length;
+} command_entry;
+
 const char READF[]    = "rFPGA,";
 const char WRITEF[]   = "wFPGA,";
 const char RVERSION[] = "readFPGAVersion";
@@ -127,48 +135,73 @@ const char WDAC[]     = "wDAC,";
 const char ADCMeas[]  = "ADCMeas,";
 const char RADC[]     = "rADC,";
 
-char* executeCommandsSerial(char *data) {
+char* readFPGAWrapper(char *data) {
+    static char addr_sub[6];
+    strncpy(addr_sub, data + 6, strlen(data) - 6);
+    return readFPGA(&addr_sub[0]);
+}
+
+char* writeFPGAWrapper(char *data) {
+    static char addr_sub[6];
+    static char data_sub[4];
     unsigned char j = 0;
     unsigned char k = 0;
     unsigned char address_done = 0;
-    char addr_sub[6];
-    char data_sub[4];
 
-    if (strncmp(data, READF, 5) == 0) {
-        strncpy(addr_sub, data+6, (strlen(data))-6);
-        return readFPGA(&addr_sub[0]);
-    } else if (strncmp(data, WRITEF, 5) == 0) {
-        for (j = 6; j <= (strlen(data)); ++j) {
-            if (data[j] != ',' && address_done == 0) {
-                addr_sub[j-6] = data[j];
-            } else if (data[j] != '\n' && data[j] != '\r' && data[j] != ',') {
-                data_sub[k] = data[j];
-                ++k;
-            } else {
-                address_done = 1;
-            }
+    for (j = 6; j <= (strlen(data)); ++j) {
+        if (data[j] != ',' && address_done == 0) {
+            addr_sub[j - 6] = data[j];
+        } else if (data[j] != '\n' && data[j] != '\r' && data[j] != ',') {
+            data_sub[k] = data[j];
+            ++k;
+        } else {
+            address_done = 1;
         }
-        writeFPGA(&addr_sub[0], &data_sub[0]);
-        return "";
-    } else if (strncmp(data, RVERSION, 14) == 0) {
-        return ReadVersion();
-    } else if (strncmp(data, WDAC, 4) == 0) {
-        DACWrite(&data[5]);
-        return "";
-    } else if (strncmp(data, ADCMeas, 7) == 0) {
-        ADCMeasure(&data[8]);
-        return "";
-    } else if (strncmp(data, RADC, 4) == 0) {
-        return ReadADCData(&data[5]);
-    } else {
-        return "";
     }
+    writeFPGA(&addr_sub[0], &data_sub[0]);
+    return NULL;
+}
+
+char* DACWriteWrapper(char *data) {
+    DACWrite(&data[5]);
+    return NULL;
+}
+
+char* ADCMeasureWrapper(char *data) {
+    ADCMeasure(&data[8]);
+    return NULL;
+}
+
+char* ReadADCDataWrapper(char *data) {
+    return ReadADCData(&data[5]);
+}
+
+const command_entry commands[] = {
+    {READF,    readFPGAWrapper,    5 },
+    {WRITEF,   writeFPGAWrapper,   5 },
+    {RVERSION, ReadVersion,        14},
+    {WDAC,     DACWriteWrapper,    4 },
+    {ADCMeas,  ADCMeasureWrapper,  7 },
+    {RADC,     ReadADCDataWrapper, 4 }
+};
+
+const unsigned char num_commands = sizeof(commands) / sizeof(commands[0]); //Divide total size in bytes by the size in bytes of a single element
+
+char* executeCommandsSerial(char *data) {
+    unsigned char i;
+
+    for (i = 0; i < num_commands; ++i) {
+        if (strncmp(data, commands[i].command, commands[i].length) == 0) {
+            return commands[i].func(data);
+        }
+    }
+    return NULL;
 }
 
 void ReadUART() {
-    unsigned char char_iter;
+    static unsigned char char_iter;
     char *commandOutput;
-    char readuart[20];
+    static char readuart[20];
 
     if (ReadIO(UART_6502_BaseAddress+4) == 0) {
         readuart[char_iter] = (char) ReadIO(UART_6502_BaseAddress+3);
@@ -178,7 +211,7 @@ void ReadUART() {
             readuart[char_iter] = (char) 0;
             char_iter = 0;
             commandOutput = executeCommandsSerial(&readuart[0]);
-            if (commandOutput != "") {
+            if (commandOutput != NULL) {
                 Print(1, commandOutput);
             }
         }

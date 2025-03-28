@@ -1,7 +1,7 @@
-const unsigned char gw_ip[4] = {192,168,1,1};
+const unsigned char gw_ip[4] = {10,194,1,1};
 const unsigned char subnet_mask[4] = {255,255,255,0};
 const unsigned char mac_address[6] = {0x00, 0x08, 0xDC, 0x01, 0x02, 0x03};
-const unsigned char ip_address[4] = {192,168,1,254};
+const unsigned char ip_address[4] = {10,194,1,254};
 unsigned char ethinit[8] = {0,0,0,0,0,0,0,0};
 
 enum w5500commonregs {

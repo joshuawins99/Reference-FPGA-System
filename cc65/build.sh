@@ -1,9 +1,9 @@
 #!/bin/bash
 rm -f none.lib
-rm -f *.l *.m *.o
-rm -f main.s
+rm -f *.l *.m *.o *.c *.s *.h *.py
 rm -f mem_init.mem
 cp /cc65/lib/none.lib .
+cp ../C_Code/* .
 ca65 --cpu 65c02 crt0.s
 ca65 --cpu 65c02 irq.s
 ar65 r none.lib crt0.o irq.o

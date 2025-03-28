@@ -71,7 +71,7 @@ module main_6502 #(
 
     //Each enumeration gets a start and end address with the start address on the left and the end address on the right
     localparam [2*(address_width*num_entries)-1:0] module_addresses = {
-        add_address('h0000, RAM_Size-1), //ram_e
+        add_address('h0000, RAM_Size-1),                    //ram_e
         add_address('h8000, 'h8000+(VersionStringSize-1)),  //version_string_e
         add_address('h9000, 'h9003),                        //io_e
         add_address('h9004, 'h9007),                        //reset_e

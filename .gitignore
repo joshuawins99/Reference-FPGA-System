@@ -1,15 +1,22 @@
-cc65/a.out
-cc65/crt0.o
-cc65/irq.o
-cc65/main.l
-cc65/main.m
-cc65/main.o
-cc65/main.s
-cc65/mem_init.mem
+cc65/*.out
+cc65/*.o
+cc65/*.l
+cc65/*.m
+cc65/*.o
+cc65/*.s
+cc65/*.py
+cc65/*.mem
 cc65/none.lib
+llvm/*.py
+llvm/*.out*
+llvm/*.s
+llvm/*.c
+llvm/*.h
+llvm/*.mem
 fpga_image.h
 main.bin
 resized_flash.bin
+rt/modules/uart_vhdl/uart_vhd_6502.vhd
 rtl/uart_vhd_6502.v
 rtl/version_string.svh
 cycloneiv_quartus/db/
@@ -18,4 +25,5 @@ cycloneiv_quartus/output_files/
 main.sof
 result_*.txt
 output_*.txt
+.vscode/*
 

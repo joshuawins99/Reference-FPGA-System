@@ -8,8 +8,8 @@
 
 #define VersionStringSize 64
 
-#define WriteIO(addr,val)     (*(unsigned char*) (addr) = (val))
-#define ReadIO(addr)          (*(unsigned char*) (addr))
+#define WriteIO(addr,val)     (*(volatile unsigned char*) (addr) = (val))
+#define ReadIO(addr)          (*(volatile unsigned char*) (addr))
 
 void Sleep (unsigned long);
 void DACWrite(char *);

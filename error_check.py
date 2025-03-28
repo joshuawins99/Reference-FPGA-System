@@ -31,11 +31,14 @@ def search_for_warnings_and_errors(output_file, result_file, patterns):
     
     warnings_and_errors = []
     for line in lines:
-        if "Warning:" in line or "Error:" in line or "ERROR" in line or "Warning (" in line:
+        if "Warning:" in line or "Error:" in line or "ERROR" in line or "Warning (" in line or "warning:" in line or "error:" in line:
             warnings_and_errors.append(line)
     
     with open(result_file, 'w') as file:
-        file.writelines(warnings_and_errors)
+        if (warnings_and_errors):
+            file.writelines(warnings_and_errors)
+        else:
+            file.write("PASS!")
     
     if warnings_and_errors:
         return warnings_and_errors

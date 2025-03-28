@@ -12,14 +12,20 @@ unsigned char EthTransfer(unsigned addr, char control, char tx_data) {
 
     // Wait for transaction to complete
     while (ReadIO(Ethernet_SPI_BaseAddress+3) == 1);
-
-    data = ReadIO(Ethernet_SPI_BaseAddress+1);
-    __asm__ ("nop");
-    data = ReadIO(Ethernet_SPI_BaseAddress+1);
-    __asm__ ("nop");
-    data = ReadIO(Ethernet_SPI_BaseAddress+1);
-    __asm__ ("nop");
-    data = ReadIO(Ethernet_SPI_BaseAddress+1);
+    #ifndef LLVM
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        __asm__ ("nop");
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        __asm__ ("nop");
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        __asm__ ("nop");
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+    #else
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+    #endif
 
     return data;
 }

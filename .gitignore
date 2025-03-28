@@ -4,6 +4,8 @@ cc65/*.l
 cc65/*.m
 cc65/*.o
 cc65/*.s
+cc65/*.c
+cc65/*.h
 cc65/*.py
 cc65/*.mem
 cc65/none.lib

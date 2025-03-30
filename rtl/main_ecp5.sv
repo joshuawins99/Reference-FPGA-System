@@ -2,7 +2,7 @@ module main_ecp5 (
     input  logic clk_i,
     input  logic reset_i,
     input  logic ex_data_i,
-    output logic ex_data_o,
+    output logic [7:0] ex_data_o,
     output logic usb_dp_pull,
     inout  logic usb_dp,
     inout  logic usb_dn,
@@ -33,7 +33,8 @@ module main_ecp5 (
     );
 
     logic [7:0] ex_data;
-    assign ex_data_o = ex_data[0];
+    //assign ex_data_o = ex_data[0];
+    assign ex_data_o = ex_data;
 
     main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),

@@ -1,4 +1,5 @@
 #include "io.h"
+#include "ethernet.h"
 
 void Sleep(unsigned long delay_time) { // In 10^-4 seconds
     unsigned char value[4];
@@ -56,13 +57,20 @@ char* ReadADCData(char *NumReadingsChar) {
     unsigned i;
 
     for (i = 0; i < NumReadings; ++i) {
-        upperbits = ReadIO(ADC_SPI_BaseAddress+1);
-        __asm__ ("nop");
-        lowerbits = ReadIO(ADC_SPI_BaseAddress+1);
+        #ifndef LLVM
+            upperbits = ReadIO(ADC_SPI_BaseAddress+1);
+            __asm__ ("nop");
+            lowerbits = ReadIO(ADC_SPI_BaseAddress+1);
+        #else
+            upperbits = ReadIO(ADC_SPI_BaseAddress+1);
+            lowerbits = ReadIO(ADC_SPI_BaseAddress+1);
+        #endif
         value = ((upperbits & 0b00011111) << 8) | lowerbits;
         sprintf(returnval, "%d", value);
         if (NumReadings > 1) {
-            Print(1, returnval);
+            //For Burst Readings Either Serial or Ethernet
+            //Print(1, returnval);
+            EthSendUDP(0, returnval);
         } 
     }
     if (NumReadings > 1) {
@@ -93,7 +101,7 @@ void Print(unsigned char line, char *data) {
 }
 
 char* ReadVersion() {
-    char readversion[VersionStringSize];
+    static char readversion[VersionStringSize];
     char current_char;
     unsigned char count = 0;
     unsigned char i;

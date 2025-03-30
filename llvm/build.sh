@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -f none.lib
-rm -f *.l *.m *.o *.elf *.s *.h *.py
+rm -f *.l *.m *.o *.elf *.s *.h *.py *.out *.c *.mem
 rm -f mem_init.mem
 cp ../C_Code/* .
 

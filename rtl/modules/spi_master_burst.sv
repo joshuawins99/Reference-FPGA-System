@@ -26,20 +26,16 @@ module spi_master_burst #(
     localparam Busy_Status       = BaseAddress + 3;
     localparam Num_Transactions  = BaseAddress + 4;
 
-    localparam SPIClkDivider = (FPGAClkSpeed/(2*SPIClkSpeed))-3;
+    localparam SPIClkDivider = (FPGAClkSpeed/(2*SPIClkSpeed))-1;
 
     logic [(8*BytesPerTransaction)-1:0] tx_data = '0;
     logic [(8*BytesPerTransaction)-1:0] tx_data_copy = '0;
     logic [(8*BytesPerTransaction)-1:0] rx_data = '0;
-    logic [$clog2(SPIClkDivider):0] spi_clk_counter = '0;
+    logic [$clog2(SPIClkDivider):0] slow_counter = '0;
     logic [7:0] bit_counter = '0;
     logic busy = 1'b0;
-    logic start_slow_clk = 1'b0;
-    logic slow_clk_enabled = 1'b0;
-    logic running_slow_clk = 1'b0;
     logic start_transaction = 1'b0;
     logic start_transaction_int = 1'b0;
-    logic trigger_next = 1'b0;
     logic rx_done = 1'b0;
     logic winc = 1'b0;
     logic [7:0] data_to_fifo = '0;
@@ -55,7 +51,7 @@ module spi_master_burst #(
         end
     end
 
-    typedef enum logic [3:0] {idle_e, initial_delay_e, start_e, transfer_e, fifo_e} state_t;
+    typedef enum logic [3:0] {idle_e, initial_delay_e, shift_e, sample_e, fifo_e} state_t;
 
     state_t state = idle_e;
 
@@ -124,7 +120,7 @@ module spi_master_burst #(
         end
     end
 
-    always_ff @(posedge clk_i) begin //SPI State Machine
+        always_ff @(posedge clk_i) begin //SPI State Machine
         if (reset_i == 1'b0) begin
             unique case (state)
                 idle_e : begin
@@ -132,70 +128,59 @@ module spi_master_burst #(
                     spi_clk_o <= 1'b0;
                     spi_mosi_o <= 1'b0;
                     busy <= 1'b0;
-                    bit_counter <= '0;
                     rx_done <= 1'b0;
                     rx_data <= '0;
-                    start_slow_clk <= 1'b0;
-                    slow_clk_enabled <= 1'b0;
-                    tx_data_copy <= tx_data;
                     spi_sync_no <= 1'b1;
+                    bit_counter <= '0;
+                    slow_counter <= '0;
+                    tx_data_copy <= tx_data;
                     if (start_transaction == 1'b1 || start_transaction_int == 1'b1) begin
                         if (start_transaction == 1'b1) begin
-                            transaction_count <= (transaction_count_wr - 1'b1);
+                            transaction_count <= (transaction_count_wr - 1'b1); 
                         end
                         start_transaction_int <= 1'b0;
                         spi_sync_no <= 1'b0;
-                        state <= initial_delay_e;
                         busy <= 1'b1;
                         spi_mosi_o <= tx_data_copy[$size(tx_data_copy)-1];
+                        state <= initial_delay_e;
                     end
                 end
                 initial_delay_e : begin
-                    if (slow_clk_enabled == 1'b0) begin
-                        start_slow_clk <= 1'b1;
-                        slow_clk_enabled <= 1'b1;
+                    if (slow_counter >= SPIClkDivider) begin
+                        slow_counter <= '0;
+                        state <= shift_e;
                     end else begin
-                        start_slow_clk <= 1'b0;
-                    end
-                    if (trigger_next == 1'b1) begin
-                        slow_clk_enabled <= 1'b0;
-                        state <= start_e;
+                        slow_counter <= slow_counter + 1'b1;
                     end
                 end
-                start_e : begin
-                    if (slow_clk_enabled == 1'b0) begin
-                        start_slow_clk <= 1'b1;
-                        slow_clk_enabled <= 1'b1;
-                        rx_data[0] <= spi_miso_i;
-                    end else begin
-                        start_slow_clk <= 1'b0;
-                    end
+                shift_e : begin
                     spi_clk_o <= 1'b1;
-                    if (trigger_next == 1'b1) begin
+                    if (slow_counter >= SPIClkDivider) begin
+                        slow_counter <= '0;
                         spi_clk_o <= 1'b0;
-                        slow_clk_enabled <= 1'b0;
-                        state <= transfer_e;
-                        tx_data_copy <= tx_data_copy << 1;
                         bit_counter <= bit_counter + 1'b1;
+                        state <= sample_e;
+                    end else begin
+                        slow_counter <= slow_counter + 1'b1;
                     end
                 end
-                transfer_e : begin
-                    if (slow_clk_enabled == 1'b0) begin
-                        start_slow_clk <= 1'b1;
-                        slow_clk_enabled <= 1'b1;
-                        spi_mosi_o <= tx_data_copy[$size(tx_data_copy)-1];
+                sample_e : begin
+                    if (bit_counter >= BytesPerTransaction*8) begin
+                        rx_done <= 1'b1;
+                        fifo_count <= BytesPerTransaction;
+                        state <= fifo_e;
                     end else begin
-                        start_slow_clk <= 1'b0;
-                    end
-                    if (trigger_next == 1'b1) begin
-                        if (bit_counter >= BytesPerTransaction*8) begin
-                            rx_done <= 1'b1;
-                            fifo_count <= BytesPerTransaction;
-                            state <= fifo_e;
-                        end else begin
+                        if (slow_counter >= SPIClkDivider) begin
+                            slow_counter <= '0;
+                            spi_mosi_o <= tx_data_copy[$size(tx_data_copy)-1];
                             rx_data <= rx_data << 1;
-                            slow_clk_enabled <= 1'b0;
-                            state <= start_e;
+                            rx_data[0] <= spi_miso_i;
+                            state <= shift_e;
+                        end else if (slow_counter == 0) begin
+                            tx_data_copy <= tx_data_copy << 1;
+                            slow_counter <= slow_counter + 1'b1;
+                        end else begin
+                            slow_counter <= slow_counter + 1'b1;
                         end
                     end
                 end
@@ -205,7 +190,6 @@ module spi_master_burst #(
                         winc <= 1'b1;
                         data_to_fifo <= rx_data[$size(rx_data)-1 -: 8];
                         rx_data <= rx_data << 8;
-                        state <= fifo_e;
                         fifo_count <= fifo_count - 1'b1;
                     end else begin
                         if (transaction_count > 0) begin
@@ -219,24 +203,6 @@ module spi_master_burst #(
             endcase
         end else begin
             state <= idle_e;
-        end
-    end
-
-    always_ff @(posedge clk_i) begin //Slow SPI Clk
-        trigger_next <= 1'b0;
-        if (reset_i == 1'b0) begin
-            if (start_slow_clk == 1'b1 || running_slow_clk == 1'b1) begin
-                running_slow_clk <= 1'b1;
-                spi_clk_counter <= spi_clk_counter + 1'b1;
-                if (spi_clk_counter >= SPIClkDivider) begin
-                    trigger_next <= 1'b1;
-                    spi_clk_counter <= '0;
-                    running_slow_clk <= 1'b0;
-                end
-            end else begin
-                running_slow_clk <= 1'b0;
-                spi_clk_counter <= '0;
-            end
         end
     end
 

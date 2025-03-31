@@ -44,9 +44,9 @@ module main_ice40 (
 
     main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
-        .ETHSPIClkSpeed      (1000000),
-        .DACSPIClkSpeed      (1000000),
-        .ADCSPIClkSpeed      (1000000),
+        .ETHSPIClkSpeed      (3000000),
+        .DACSPIClkSpeed      (3000000),
+        .ADCSPIClkSpeed      (3000000),
         .MaxADCBurstReadings (9), //256 Readings
         .BaudRate6502        (BaudRate6502),
         .address_width       (address_width),

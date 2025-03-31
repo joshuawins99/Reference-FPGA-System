@@ -23,8 +23,8 @@ module main_cycloneiv (
 
     main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
-        .ETHSPIClkSpeed      (5000000),
-        .DACSPIClkSpeed      (5000000),
+        .ETHSPIClkSpeed      (10000000),
+        .DACSPIClkSpeed      (10000000),
         .ADCSPIClkSpeed      (2500000),
         .MaxADCBurstReadings (13), //4096 Readings
         .BaudRate6502        (BaudRate6502),

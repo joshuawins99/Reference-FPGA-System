@@ -65,6 +65,9 @@ module main_6502 #(
         dac_e,
         adc_e,
         timer_e,
+    `ifdef ECP5
+        ecp5_dtr_e,
+    `endif
         special_e,
         num_entries
     } module_bus;
@@ -80,6 +83,9 @@ module main_6502 #(
         add_address('h9210, 'h9213),                        //dac_e
         add_address('h9220, 'h9224),                        //adc_e
         add_address('h9300, 'h9302),                        //timer_e
+    `ifdef ECP5
+        add_address('h9303, 'h9303),                        //ecp5_dtr_e
+    `endif
         add_address('hFFFA, 'hFFFF)                         //special_e
     };
 
@@ -321,6 +327,21 @@ module main_6502 #(
         .data_o        (data_reg_inputs[timer_e]),
         .rd_wr_i       (cpu_we_o)
     );
+
+`ifdef ECP5
+    ecp5_dtr #(
+        .BaseAddress   (get_address_start(ecp5_dtr_e)),
+        .address_width (16),
+        .data_width    (8)
+    ) ecp5_dtr_inst (
+        .clk_i         (clk_i),
+        .reset_i       (reset),
+        .address_i     (address),
+        .data_i        (cpu_data_o),
+        .data_o        (data_reg_inputs[ecp5_dtr_e]),
+        .rd_wr_i       (cpu_we_o)
+    );
+`endif
 
 `ifndef USB_UART
     uart_6502 #(

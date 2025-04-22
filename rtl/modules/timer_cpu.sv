@@ -1,9 +1,10 @@
-module timer_6502 #(
-    parameter BaseAddress = 0,
-    parameter FPGAClkSpeed = 0,
-    parameter TimerClkSpeed = 0,
-    parameter address_width = 16,
-    parameter data_width = 8
+module timer_cpu #(
+    parameter BaseAddress     = 0,
+    parameter FPGAClkSpeed    = 0,
+    parameter TimerClkSpeed   = 0,
+    parameter address_width   = 16,
+    parameter data_width      = 8,
+    parameter Address_Wording = 1
 )(
     input  logic                     clk_i,
     input  logic                     reset_i,
@@ -13,9 +14,9 @@ module timer_6502 #(
     input  logic                     rd_wr_i
 );
 
-    localparam Set_Timer_Value_Address = BaseAddress + 0;
-    localparam Start_Timer_Address     = BaseAddress + 1;
-    localparam Read_Timer_Status       = BaseAddress + 2;
+    localparam Set_Timer_Value_Address = BaseAddress + (0*Address_Wording);
+    localparam Start_Timer_Address     = BaseAddress + (1*Address_Wording);
+    localparam Read_Timer_Status       = BaseAddress + (2*Address_Wording);
 
     localparam SlowClkDivider = FPGAClkSpeed/(TimerClkSpeed);
     localparam CalibrationFactor = 0;

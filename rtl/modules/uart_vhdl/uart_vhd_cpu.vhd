@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use IEEE.MATH_REAL.ALL;
 
-entity UART_VHD_6502 is
+entity UART_VHD_CPU is
     port (
         CLK       : in  std_logic;
         RST       : in  std_logic;
@@ -17,12 +17,12 @@ entity UART_VHD_6502 is
     );
 end entity;
 
-architecture RTL of UART_VHD_6502 is 
+architecture RTL of UART_VHD_CPU is 
 
 begin
-    UART_6502_inst : entity work.UART
+    UART_CPU_inst : entity work.UART
     generic map (
-        CLK_FREQ => 12000000,
+        CLK_FREQ => 50000000,
         BAUD_RATE => 230400,
         OVERSAMPLE_RATE => 16
     )

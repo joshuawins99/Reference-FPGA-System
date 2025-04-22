@@ -4,7 +4,8 @@ module version_string #(
     parameter NumCharacters = 44,
     parameter CharsPerTransaction = 1,
     parameter address_width = 15,
-    parameter data_width = 16
+    parameter data_width = 16,
+    parameter Address_Wording = 1
 )(
 
     input  logic                     clk_i,
@@ -16,6 +17,8 @@ module version_string #(
 );
 
     localparam Version_String = BaseAddress + 0;
+
+    logic [address_width-1:0] address;
 
     logic [NumCharacters*8-1:0] date = `version_string;
 
@@ -30,14 +33,21 @@ module version_string #(
     logic [data_width-1:0] data;
 
     always_comb begin
-        data = '0;
-        if (rd_wr_i == 1'b0) begin
-            if (address_i >= Version_String && address_i <= Version_String+(NumCharacters/CharsPerTransaction)) begin
-                data = get_characters((NumCharacters-1)-(address_i-Version_String));
-            end
+        if (address_i >= Version_String) begin
+            address = (address_i-Version_String) / (Address_Wording);
+        end else begin
+            address = '0;
         end
     end
 
+    always_comb begin
+        data = '0;
+        if (rd_wr_i == 1'b0) begin
+            if (address >= 0 && address < NumCharacters) begin
+                data = get_characters((NumCharacters-1)-address);
+            end
+        end
+    end
 
     assign data_o = data;
 

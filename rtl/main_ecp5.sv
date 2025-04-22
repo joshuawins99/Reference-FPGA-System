@@ -20,7 +20,7 @@ module main_ecp5 (
     output logic adc_sync_no
 );
     localparam FPGAClkSpeed  = 40000000;
-    localparam BaudRate6502  = 230400;
+    localparam BaudRateCPU   = 230400;
     localparam address_width = 16;
     localparam data_width    = 8;
 
@@ -42,7 +42,7 @@ module main_ecp5 (
         .DACSPIClkSpeed      (10000000),
         .ADCSPIClkSpeed      (2500000),
         .MaxADCBurstReadings (13), //4096 Readings
-        .BaudRate6502        (BaudRate6502),
+        .BaudRateCPU         (BaudRateCPU),
         .address_width       (address_width),
         .data_width          (data_width)
     ) m1 (

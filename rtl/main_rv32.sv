@@ -1,4 +1,4 @@
-module main_6502 #(
+module main_rv32 #(
     parameter FPGAClkSpeed        = 50000000, //In Hz
     parameter ETHSPIClkSpeed      = 1000000,
     parameter DACSPIClkSpeed      = 1000000,
@@ -32,12 +32,13 @@ module main_6502 #(
 );
 
     localparam              RAM_Size                   = 12288;
-    localparam logic [15:0] Program_6502_Start_Address = 'h0200;
+    localparam logic [31:0] Program_RV32_Start_Address = 32'h0;
     
     localparam VersionStringSize = 64;
     
     logic [data_width-1:0]    cpu_data_o;
     logic                     cpu_we_o;
+    logic [3:0]               we_ram_o;
     logic                     irq;
 
 //******************************************* Data Registers and Mux *******************************************
@@ -68,25 +69,25 @@ module main_6502 #(
     `ifdef ECP5
         ecp5_dtr_e,
     `endif
-        special_e,
+        dummy_e,
         num_entries
     } module_bus;
 
     //Each enumeration gets a start and end address with the start address on the left and the end address on the right
     localparam [2*(address_width*num_entries)-1:0] module_addresses = {
-        add_address('h0000, RAM_Size-1),                    //ram_e
-        add_address('h8000, 'h8000+(VersionStringSize-1)),  //version_string_e
-        add_address('h9000, 'h9003),                        //io_e
-        add_address('h9004, 'h9007),                        //reset_e
-        add_address('h9100, 'h9104),                        //uart_e
-        add_address('h9200, 'h9203),                        //ethernet_e
-        add_address('h9210, 'h9213),                        //dac_e
-        add_address('h9220, 'h9224),                        //adc_e
-        add_address('h9300, 'h9302),                        //timer_e
+        add_address('h0000, RAM_Size),                        //ram_e
+        add_address('h8000, 'h8000+(VersionStringSize-1)*4),  //version_string_e
+        add_address('h9000, 'h900C),                          //io_e
+        add_address('h9010, 'h901C),                          //reset_e
+        add_address('h9100, 'h9110),                          //uart_e
+        add_address('h9200, 'h920C),                          //ethernet_e
+        add_address('h9210, 'h921C),                          //dac_e
+        add_address('h9220, 'h9230),                          //adc_e
+        add_address('h9300, 'h9308),                          //timer_e
     `ifdef ECP5
-        add_address('h9400, 'h9400),                        //ecp5_dtr_e
+        add_address('h9400, 'h9400),                          //ecp5_dtr_e
     `endif
-        add_address('hFFFA, 'hFFFF)                         //special_e
+        add_address('hA000, 'hA000)                           //dummy_e for when dtr doesnt exist
     };
 
     typedef logic [data_width-1:0] data_reg_inputs_t [0:num_entries-1];
@@ -136,15 +137,8 @@ module main_6502 #(
     logic [63:0]                reset_counter = '0;
     logic [7:0]                 reset_int;
 
-    logic [7:0]                 spec_mem [5:0];
-
-    initial begin
-        spec_mem[2] = Program_6502_Start_Address[15:8];
-        spec_mem[3] = Program_6502_Start_Address[7:0];
-    end
-
     always_ff @(posedge clk_i) begin
-        if (reset_i == 1'b1 || reset_int != 0) begin
+        if (reset_i == 1'b1) begin
             usb_dp_pull <= 1'b0;
             eth_reset_o <= 1'b0;
             reset <= 1'b1;
@@ -161,43 +155,33 @@ module main_6502 #(
         end
     end
 
-    cpu_65c02 cpu1 (
-        .clk   (clk_i),
-        .reset (reset),
-        .AB    (address),
-        .DI    (data_reg),
-        .DO    (cpu_data_o),
-        .WE    (cpu_we_o),
-        .IRQ   (irq),
-        .NMI   ('0),
-        .RDY   ('1)
+    cpu_rv32 #(
+        .ProgramStartAddress (Program_RV32_Start_Address),
+        .StackAddress        (),
+        .address_width       (address_width)
+    ) cpu1 (
+        .clk_i     (clk_i),
+        .reset_i   (reset),
+        .address_o (address),
+        .data_i    (data_reg),
+        .data_o    (cpu_data_o),
+        .we_o      (cpu_we_o),
+        .we_ram_o  (we_ram_o)
     );
 
-    always_ff @(posedge clk_i) begin
-        if (address >= 'hFFFA && address <= 'hFFFF) begin
-            if (cpu_we_o == 1'b0) begin
-                data_reg_inputs[special_e] <= spec_mem['hFFFF-address];
-            end else begin
-                spec_mem['hFFFF-address] <= cpu_data_o;
-            end
-        end else begin
-            data_reg_inputs[special_e] <= data_reg_inputs[special_e];
-        end
-    end
-
-    bram_contained #(
+    bram_contained_rv32 #(
         .BaseAddress    (get_address_start(ram_e)),
         .EndAddress     (get_address_end(ram_e)),
         .address_width  (16),
-        .data_width     (8),
+        .data_width     (32),
         .ram_size       (RAM_Size),
         .pre_fill       (1),
-        .pre_fill_start (Program_6502_Start_Address),
-        .pre_fill_file  ("../cc65/mem_init.mem")
+        .pre_fill_start (Program_RV32_Start_Address),
+        .pre_fill_file  ("../rv32_gcc/mem_init.mem")
     ) ram1 (
         .clk            (clk_i),
         .addr           (address),
-        .wr             (cpu_we_o),
+        .wr             (we_ram_o),
         .din            (cpu_data_o),
         .dout           (data_reg_inputs[ram_e])
     );
@@ -207,25 +191,27 @@ module main_6502 #(
         .NumCharacters       (VersionStringSize),
         .CharsPerTransaction (1),
         .address_width       (address_width),
-        .data_width          (data_width)
+        .data_width          (8),
+        .Address_Wording     (4)
     ) version_string_1 (
         .clk_i               (clk_i),
         .address_i           (address_reg),
-        .data_i              (cpu_data_o),
+        .data_i              (cpu_data_o[7:0]),
         .rd_wr_i             (cpu_we_o),
-        .data_o              (data_reg_inputs[version_string_e])
+        .data_o              (data_reg_inputs[version_string_e][7:0])
     );
 
     io_cpu #(
         .BaseAddress     (get_address_start(io_e)),
         .address_width   (16),
-        .data_width      (8)
-    ) io_6502_1 (
+        .data_width      (8),
+        .Address_Wording (4)
+    ) io_rv32_1 (
         .clk_i           (clk_i),
         .reset_i         (reset),
         .address_i       (address),
-        .data_i          (cpu_data_o),
-        .data_o          (data_reg_inputs[io_e]),
+        .data_i          (cpu_data_o[7:0]),
+        .data_o          (data_reg_inputs[io_e][7:0]),
         .ex_data_i       (ex_data_i),
         .ex_data_o       (ex_data_o),
         .rd_wr_i         (cpu_we_o),
@@ -237,13 +223,14 @@ module main_6502 #(
     io_cpu #(
         .BaseAddress     (get_address_start(reset_e)),
         .address_width   (16),
-        .data_width      (8)
-    ) io_6502_reset_1 (
+        .data_width      (8),
+        .Address_Wording (4)
+    ) io_rv32_reset_1 (
         .clk_i           (clk_i),
         .reset_i         (reset),
         .address_i       (address),
-        .data_i          (cpu_data_o),
-        .data_o          (data_reg_inputs[reset_e]),
+        .data_i          (cpu_data_o[7:0]),
+        .data_o          (data_reg_inputs[reset_e][7:0]),
         .ex_data_i       ('0),
         .ex_data_o       (reset_int),
         .rd_wr_i         (cpu_we_o),
@@ -258,13 +245,14 @@ module main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
         .SPIClkSpeed         (ETHSPIClkSpeed),
         .address_width       (16),
-        .data_width          (8)
+        .data_width          (8),
+        .Address_Wording     (4)
     ) ethernet_spi_1 (
         .clk_i               (clk_i),
         .reset_i             (reset),
         .address_i           (address),
-        .data_i              (cpu_data_o),
-        .data_o              (data_reg_inputs[ethernet_e]),
+        .data_i              (cpu_data_o[7:0]),
+        .data_o              (data_reg_inputs[ethernet_e][7:0]),
         .rd_wr_i             (cpu_we_o),
         .spi_clk_o           (eth_sclk_o),
         .spi_miso_i          (eth_miso_i),
@@ -278,13 +266,14 @@ module main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
         .SPIClkSpeed         (DACSPIClkSpeed),
         .address_width       (16),
-        .data_width          (8)
+        .data_width          (8),
+        .Address_Wording     (4)
     ) dac_spi_1 (
         .clk_i               (clk_i),
         .reset_i             (reset),
         .address_i           (address),
-        .data_i              (cpu_data_o),
-        .data_o              (data_reg_inputs[dac_e]),
+        .data_i              (cpu_data_o[7:0]),
+        .data_o              (data_reg_inputs[dac_e][7:0]),
         .rd_wr_i             (cpu_we_o),
         .spi_clk_o           (dac_sclk_o),
         .spi_miso_i          ('0),
@@ -299,13 +288,14 @@ module main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
         .SPIClkSpeed         (ADCSPIClkSpeed),
         .address_width       (16),
-        .data_width          (8)
+        .data_width          (8),
+        .Address_Wording     (4)
     ) adc_spi_1 (
         .clk_i               (clk_i),
         .reset_i             (reset),
         .address_i           (address),
-        .data_i              (cpu_data_o),
-        .data_o              (data_reg_inputs[adc_e]),
+        .data_i              (cpu_data_o[7:0]),
+        .data_o              (data_reg_inputs[adc_e][7:0]),
         .rd_wr_i             (cpu_we_o),
         .spi_clk_o           (adc_sclk_o),
         .spi_miso_i          (adc_miso_i),
@@ -314,17 +304,18 @@ module main_6502 #(
     );
 
     timer_cpu #(
-        .BaseAddress   (get_address_start(timer_e)),
-        .FPGAClkSpeed  (FPGAClkSpeed),
-        .TimerClkSpeed (10000),
-        .address_width (16),
-        .data_width    (8)
-    ) timer_6502_1 (
+        .BaseAddress     (get_address_start(timer_e)),
+        .FPGAClkSpeed    (FPGAClkSpeed),
+        .TimerClkSpeed   (10000),
+        .address_width   (16),
+        .data_width      (8),
+        .Address_Wording (4)
+    ) timer_rv32_1 (
         .clk_i         (clk_i),
         .reset_i       (reset),
         .address_i     (address),
-        .data_i        (cpu_data_o),
-        .data_o        (data_reg_inputs[timer_e]),
+        .data_i        (cpu_data_o[7:0]),
+        .data_o        (data_reg_inputs[timer_e][7:0]),
         .rd_wr_i       (cpu_we_o)
     );
 
@@ -337,8 +328,8 @@ module main_6502 #(
         .clk_i         (clk_i),
         .reset_i       (reset),
         .address_i     (address),
-        .data_i        (cpu_data_o),
-        .data_o        (data_reg_inputs[ecp5_dtr_e]),
+        .data_i        (cpu_data_o[7:0]),
+        .data_o        (data_reg_inputs[ecp5_dtr_e][7:0]),
         .rd_wr_i       (cpu_we_o)
     );
 `endif
@@ -347,13 +338,14 @@ module main_6502 #(
     uart_cpu #(
         .BaseAddress     (get_address_start(uart_e)),
         .FPGAClkSpeed    (FPGAClkSpeed),
-        .UARTBaudRate    (BaudRateCPU)
-    ) uart_6502_1 (
+        .UARTBaudRate    (BaudRateCPU),
+        .Address_Wording (4)
+    ) uart_rv32_1 (
         .clk_i           (clk_i),
         .reset_i         (reset),
         .address_i       (address),
-        .data_i          (cpu_data_o),
-        .data_o          (data_reg_inputs[uart_e]),
+        .data_i          (cpu_data_o[7:0]),
+        .data_o          (data_reg_inputs[uart_e][7:0]),
         .rd_wr_i         (cpu_we_o),
         .take_controlw_o (),
         .take_controlr_o (),
@@ -362,14 +354,15 @@ module main_6502 #(
     );    
 `else
     uart_usb #(
-        .BaseAddress     (get_address_start(uart_e))
-    ) uart_6502_1 (
+        .BaseAddress     (get_address_start(uart_e)),
+        .Address_Wording (4)
+    ) uart_rv32_1 (
         .clk_i           (clk_i),
         .clk_48_i        (clk_48_i),
         .reset_i         (reset),
         .address_i       (address),
-        .data_i          (cpu_data_o),
-        .data_o          (data_reg_inputs[uart_e]),
+        .data_i          (cpu_data_o[7:0]),
+        .data_o          (data_reg_inputs[uart_e][7:0]),
         .rd_wr_i         (cpu_we_o),
         .pin_usb_p       (usb_dp),
         .pin_usb_n       (usb_dn)

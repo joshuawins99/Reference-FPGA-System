@@ -1,11 +1,12 @@
 module spi_master_burst #(
-    parameter BaseAddress = 0,
+    parameter BaseAddress         = 0,
     parameter BytesPerTransaction = 1,
     parameter MaxADCBurstReadings = 2, //(2^x)/ 2 Readings
-    parameter FPGAClkSpeed = 50000000, //In Hz
-    parameter SPIClkSpeed = 1000, //In Hz
-    parameter address_width = 16,
-    parameter data_width = 8
+    parameter FPGAClkSpeed        = 50000000, //In Hz
+    parameter SPIClkSpeed         = 1000, //In Hz
+    parameter address_width       = 16,
+    parameter data_width          = 8,
+    parameter Address_Wording     = 1
 
 )(
     input  logic                     clk_i,
@@ -20,11 +21,11 @@ module spi_master_burst #(
     output logic                     spi_sync_no
 );
 
-    localparam Write_Byte        = BaseAddress + 0;
-    localparam Read_Byte         = BaseAddress + 1;
-    localparam Start_Transaction = BaseAddress + 2;
-    localparam Busy_Status       = BaseAddress + 3;
-    localparam Num_Transactions  = BaseAddress + 4;
+    localparam Write_Byte        = BaseAddress + (0*Address_Wording);
+    localparam Read_Byte         = BaseAddress + (1*Address_Wording);
+    localparam Start_Transaction = BaseAddress + (2*Address_Wording);
+    localparam Busy_Status       = BaseAddress + (3*Address_Wording);
+    localparam Num_Transactions  = BaseAddress + (4*Address_Wording);
 
     localparam SPIClkDivider = (FPGAClkSpeed/(2*SPIClkSpeed))-1;
 

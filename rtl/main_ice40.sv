@@ -9,7 +9,7 @@ module main_ice40 (
     input  logic eth_miso_i
 );
     localparam FPGAClkSpeed  = 12000000;
-    localparam BaudRate6502  = 230400;
+    localparam BaudRateCPU   = 230400;
     localparam address_width = 16;
     localparam data_width    = 8;
 
@@ -48,7 +48,7 @@ module main_ice40 (
         .DACSPIClkSpeed      (3000000),
         .ADCSPIClkSpeed      (3000000),
         .MaxADCBurstReadings (9), //256 Readings
-        .BaudRate6502        (BaudRate6502),
+        .BaudRateCPU         (BaudRateCPU),
         .address_width       (address_width),
         .data_width          (data_width)
     ) m1 (

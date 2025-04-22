@@ -1,7 +1,8 @@
-module uart_6502 #(
-    parameter BaseAddress = 0,
-    parameter FPGAClkSpeed = 0,
-    parameter UARTBaudRate = 0
+module uart_cpu #(
+    parameter BaseAddress     = 0,
+    parameter FPGAClkSpeed    = 0,
+    parameter UARTBaudRate    = 0,
+    parameter Address_Wording = 1
 )(
     input logic clk_i,
     input logic reset_i,
@@ -15,11 +16,11 @@ module uart_6502 #(
     input logic uart_rx_i
 );
 
-    localparam TransmitData     = BaseAddress + 0;
-    localparam SendTransmitData = BaseAddress + 1;
-    localparam ReadBusyState    = BaseAddress + 2;
-    localparam ReadFIFO         = BaseAddress + 3;
-    localparam ReadFIFOStatus   = BaseAddress + 4;
+    localparam TransmitData     = BaseAddress + (0*Address_Wording);
+    localparam SendTransmitData = BaseAddress + (1*Address_Wording);
+    localparam ReadBusyState    = BaseAddress + (2*Address_Wording);
+    localparam ReadFIFO         = BaseAddress + (3*Address_Wording);
+    localparam ReadFIFOStatus   = BaseAddress + (4*Address_Wording);
 
     logic [7:0] transmit_data = '0;
     logic tx_start = 1'b0;
@@ -121,7 +122,7 @@ module uart_6502 #(
         .arempty ()
     );
 
-    UART_VHD_6502 #(
+    UART_VHD_CPU #(
     )uart_6502_1(
         .CLK       (clk_i),
         .RST       ('0),

@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE EP4CE6E22C8
 set_global_assignment -name TOP_LEVEL_ENTITY main_cycloneiv
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "10:36:15  OCTOBER 06, 2024"
-set_global_assignment -name LAST_QUARTUS_VERSION "23.1std.1 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "24.1std.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -91,11 +91,12 @@ set_global_assignment -name VERILOG_FILE ../rtl/modules/usb_serial/usb_fs_in_arb
 set_global_assignment -name VERILOG_FILE ../rtl/modules/usb_serial/serial.v
 set_global_assignment -name VERILOG_FILE ../rtl/modules/usb_serial/edge_detect.v
 set_global_assignment -name VERILOG_FILE ../rtl/pll_cycloneiv.v
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/io_6502.sv
+set_global_assignment -name VERILOG_FILE ../rtl/uart_vhd_cpu.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/io_cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/spi_master.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/spi_master_burst.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/fifo_6502.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/timer_6502.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/timer_cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/async_fifo.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/fifomem.v
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/modules/async_fifo/rptr_empty.v

@@ -1,5 +1,6 @@
 module uart_usb #(
-    parameter BaseAddress = 0
+    parameter BaseAddress = 0,
+    parameter Address_Wording = 1
 )(
     input logic clk_i,
     input logic clk_48_i,
@@ -12,11 +13,11 @@ module uart_usb #(
     inout  pin_usb_n
 );
 
-    localparam TransmitData     = BaseAddress + 0;
-    localparam SendTransmitData = BaseAddress + 1;
-    localparam ReadBusyState    = BaseAddress + 2;
-    localparam ReadFIFO         = BaseAddress + 3;
-    localparam ReadFIFOStatus   = BaseAddress + 4;
+    localparam TransmitData     = BaseAddress + (0*Address_Wording);
+    localparam SendTransmitData = BaseAddress + (1*Address_Wording);
+    localparam ReadBusyState    = BaseAddress + (2*Address_Wording);
+    localparam ReadFIFO         = BaseAddress + (3*Address_Wording);
+    localparam ReadFIFOStatus   = BaseAddress + (4*Address_Wording);
 
     logic [7:0] transmit_data = '0;
     logic tx_start = 1'b0;

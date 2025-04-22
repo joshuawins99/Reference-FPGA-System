@@ -98,11 +98,11 @@ unsigned char EthTransfer(unsigned addr, char control, char tx_data) {
     WriteIO(Ethernet_SPI_BaseAddress, (addr & 0x00FF));
     WriteIO(Ethernet_SPI_BaseAddress, control);
     WriteIO(Ethernet_SPI_BaseAddress, tx_data);
-    WriteIO(Ethernet_SPI_BaseAddress+2, 1); // Start Transaction in SPI Module
+    WriteIO(Ethernet_SPI_BaseAddress+(2*ADDR_WORD), 1); // Start Transaction in SPI Module
 
     // Wait for transaction to complete
-    while (ReadIO(Ethernet_SPI_BaseAddress+3) == 1);
-    #ifndef LLVM
+    while (ReadIO(Ethernet_SPI_BaseAddress+(3*ADDR_WORD)) == 1);
+    #if !defined(LLVM) && !defined(RV32)
         data = ReadIO(Ethernet_SPI_BaseAddress+1);
         __asm__ ("nop");
         data = ReadIO(Ethernet_SPI_BaseAddress+1);
@@ -111,10 +111,10 @@ unsigned char EthTransfer(unsigned addr, char control, char tx_data) {
         __asm__ ("nop");
         data = ReadIO(Ethernet_SPI_BaseAddress+1);
     #else
-        data = ReadIO(Ethernet_SPI_BaseAddress+1);
-        data = ReadIO(Ethernet_SPI_BaseAddress+1);
-        data = ReadIO(Ethernet_SPI_BaseAddress+1);
-        data = ReadIO(Ethernet_SPI_BaseAddress+1);
+        data = ReadIO(Ethernet_SPI_BaseAddress+(1*ADDR_WORD));
+        data = ReadIO(Ethernet_SPI_BaseAddress+(1*ADDR_WORD));
+        data = ReadIO(Ethernet_SPI_BaseAddress+(1*ADDR_WORD));
+        data = ReadIO(Ethernet_SPI_BaseAddress+(1*ADDR_WORD));
     #endif
 
     return data;

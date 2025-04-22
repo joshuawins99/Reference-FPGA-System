@@ -1,7 +1,8 @@
-module io_6502 #(
-    parameter BaseAddress = 0,
-    parameter address_width = 16,
-    parameter data_width = 8
+module io_cpu #(
+    parameter BaseAddress     = 0,
+    parameter address_width   = 16,
+    parameter data_width      = 8,
+    parameter Address_Wording = 1
 )(
     input  logic                     clk_i,
     input  logic                     reset_i,
@@ -15,10 +16,10 @@ module io_6502 #(
     output logic                     take_controlr_o,
     output logic                     take_controlw_o
 );
-    localparam External_Inputs_Address  = BaseAddress + 0;
-    localparam External_Outputs_Address = BaseAddress + 1;
-    localparam IRQ_Mask                 = BaseAddress + 2;
-    localparam IRQ_Clear                = BaseAddress + 3;
+    localparam External_Inputs_Address  = BaseAddress + (0*Address_Wording);
+    localparam External_Outputs_Address = BaseAddress + (1*Address_Wording);
+    localparam IRQ_Mask                 = BaseAddress + (2*Address_Wording);
+    localparam IRQ_Clear                = BaseAddress + (3*Address_Wording);
 
     logic [data_width-1:0] external_inputs_reg;
     logic [data_width-1:0] external_outputs_reg;

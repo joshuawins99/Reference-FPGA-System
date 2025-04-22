@@ -13,13 +13,13 @@ void Sleep(unsigned long delay_time) { // In 10^-4 seconds
 
     // Write the value array to the timer base address
     for (i = 0; i < 4; ++i) {
-        WriteIO(Timer_6502_BaseAddress, value[i]);
+        WriteIO(Timer_CPU_BaseAddress, value[i]);
     }
-    WriteIO(Timer_6502_BaseAddress+1, 1);
+    WriteIO(Timer_CPU_BaseAddress+(1*ADDR_WORD), 1);
 
     // Wait until the timer status is non-zero
     do {
-        timer_status = ReadIO(Timer_6502_BaseAddress+2);
+        timer_status = ReadIO(Timer_CPU_BaseAddress+(2*ADDR_WORD));
     } while (timer_status == 0);
 }
 
@@ -30,9 +30,9 @@ void DACWrite(char *txchar) {
     WriteIO(DAC_SPI_BaseAddress, 0b00010000);
     WriteIO(DAC_SPI_BaseAddress, (txdata >> 8));
     WriteIO(DAC_SPI_BaseAddress, (txdata & 0x00FF));
-    WriteIO(DAC_SPI_BaseAddress+2, 1); //Start Transaction in SPI Module
+    WriteIO(DAC_SPI_BaseAddress+(2*ADDR_WORD), 1); //Start Transaction in SPI Module
     do {
-        busy_status = ReadIO(DAC_SPI_BaseAddress+3);
+        busy_status = ReadIO(DAC_SPI_BaseAddress+(3*ADDR_WORD));
     } while (busy_status == 1);
 }
 
@@ -40,11 +40,11 @@ void ADCMeasure(char *NumReadingsChar) {
     unsigned NumReadings = atoi(NumReadingsChar);
     unsigned char busy_status = 0;
 
-    WriteIO(ADC_SPI_BaseAddress+4, (NumReadings >> 8));
-    WriteIO(ADC_SPI_BaseAddress+4, (NumReadings & 0x00FF));
-    WriteIO(ADC_SPI_BaseAddress+2, 1); //Start Transaction in SPI Module
+    WriteIO(ADC_SPI_BaseAddress+(4*ADDR_WORD), (NumReadings >> 8));
+    WriteIO(ADC_SPI_BaseAddress+(4*ADDR_WORD), (NumReadings & 0x00FF));
+    WriteIO(ADC_SPI_BaseAddress+(2*ADDR_WORD), 1); //Start Transaction in SPI Module
     do {
-        busy_status = ReadIO(ADC_SPI_BaseAddress+3);
+        busy_status = ReadIO(ADC_SPI_BaseAddress+(3*ADDR_WORD));
     } while (busy_status == 1);
 }
 
@@ -57,13 +57,13 @@ char* ReadADCData(char *NumReadingsChar) {
     unsigned i;
 
     for (i = 0; i < NumReadings; ++i) {
-        #ifndef LLVM
+        #if !defined(LLVM) && !defined(RV32)
             upperbits = ReadIO(ADC_SPI_BaseAddress+1);
             __asm__ ("nop");
             lowerbits = ReadIO(ADC_SPI_BaseAddress+1);
         #else
-            upperbits = ReadIO(ADC_SPI_BaseAddress+1);
-            lowerbits = ReadIO(ADC_SPI_BaseAddress+1);
+            upperbits = ReadIO(ADC_SPI_BaseAddress+(1*ADDR_WORD));
+            lowerbits = ReadIO(ADC_SPI_BaseAddress+(1*ADDR_WORD));
         #endif
         value = ((upperbits & 0b00011111) << 8) | lowerbits;
         sprintf(returnval, "%d", value);
@@ -86,16 +86,16 @@ void Print(unsigned char line, char *data) {
     unsigned char strlength = strlen(data);
 
     while (iterator < strlength || (line && iterator == strlength)) {
-        busy_status = ReadIO(UART_6502_BaseAddress+2);
+        busy_status = ReadIO(UART_CPU_BaseAddress+(2*ADDR_WORD));
         if (busy_status == 0) {
             if (iterator < strlength) {
-                WriteIO(UART_6502_BaseAddress, data[iterator]);
+                WriteIO(UART_CPU_BaseAddress, data[iterator]);
                 ++iterator;
             } else if (line) {
-                WriteIO(UART_6502_BaseAddress, '\n');
+                WriteIO(UART_CPU_BaseAddress, '\n');
                 line = 0;  // To exit the loop after writing the newline character
             }
-            WriteIO(UART_6502_BaseAddress+1, 1);
+            WriteIO(UART_CPU_BaseAddress+(1*ADDR_WORD), 1);
         }
     }
 }
@@ -107,7 +107,7 @@ char* ReadVersion() {
     unsigned char i;
 
     for (i = 0; i < VersionStringSize; ++i) {
-        current_char = (char) ReadIO(Version_String_BaseAddress+i);
+        current_char = (char) ReadIO(Version_String_BaseAddress+(i*ADDR_WORD));
         if (current_char == '\0') {
             ++count;
         } else {
@@ -211,8 +211,8 @@ void ReadUART() {
     char *commandOutput;
     static char readuart[20];
 
-    if (ReadIO(UART_6502_BaseAddress+4) == 0) {
-        readuart[char_iter] = (char) ReadIO(UART_6502_BaseAddress+3);
+    if (ReadIO(UART_CPU_BaseAddress+(4*ADDR_WORD)) == 0) {
+        readuart[char_iter] = (char) ReadIO(UART_CPU_BaseAddress+(3*ADDR_WORD));
         if (readuart[char_iter] != '\n') {
             ++char_iter;
         } else {

@@ -1,0 +1,13 @@
+main_6502.sv 
+main_rv32.sv 
+modules/*.* 
+modules/6502/* 
+modules/picorv32/* 
+modules/async_fifo/* 
+modules/usb_serial/* 
+uart_vhd_cpu.v
+main_ice40.sv
+main_ecp5.sv 
+pll_ecp5.v
+pll_cycloneiv.v
+main_cycloneiv.sv

@@ -25,7 +25,8 @@ fi
 echo -n ' ' >> version_string.svh
 date --date 'now' '+%a %b %d %r %Z %Y' | sed -e 's/$/"/' -e 's/,/","/g' >> version_string.svh
 ghdl --synth --out=verilog modules/uart_vhdl/*.vhd -e UART_VHD_CPU > uart_vhd_cpu.v
-yosys -q -p 'abc_new; read_verilog -sv -nooverwrite main_ice40.sv main_6502.sv main_rv32.sv modules/*.* modules/6502/* modules/async_fifo/* modules/usb_serial/* uart_vhd_cpu.v; hierarchy -top main_ice40; synth_ice40 -top main_ice40 -json main.json'
+FILELIST=$(../convert_filelist.sh rtl_filelist.txt)
+yosys -q -p "abc_new; read_verilog -sv -nooverwrite $FILELIST; hierarchy -top main_ice40; synth_ice40 -top main_ice40 -json main.json"
 nextpnr-ice40 --up5k --package sg48 --json main.json --pcf ../pin_config_ice40.pcf --asc main.asc --pcf-allow-unconstrained --randomize-seed --timing-allow-fail
 icepack main.asc main.bin
 rm -f main.asc main.json

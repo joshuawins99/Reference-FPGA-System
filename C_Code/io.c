@@ -185,12 +185,12 @@ char* ReadADCDataWrapper(char *data) {
 }
 
 const command_entry commands[] = {
-    {READF,    readFPGAWrapper,    5 },
-    {WRITEF,   writeFPGAWrapper,   5 },
-    {RVERSION, ReadVersion,        14},
-    {WDAC,     DACWriteWrapper,    4 },
-    {ADCMeas,  ADCMeasureWrapper,  7 },
-    {RADC,     ReadADCDataWrapper, 4 }
+    {READF,    readFPGAWrapper,    sizeof(READF)-1   },
+    {WRITEF,   writeFPGAWrapper,   sizeof(WRITEF)-1  },
+    {RVERSION, ReadVersion,        sizeof(RVERSION)-1},
+    {WDAC,     DACWriteWrapper,    sizeof(WDAC)-1    },
+    {ADCMeas,  ADCMeasureWrapper,  sizeof(ADCMeas)-1 },
+    {RADC,     ReadADCDataWrapper, sizeof(RADC)-1    }
 };
 
 const unsigned char num_commands = sizeof(commands) / sizeof(commands[0]); //Divide total size in bytes by the size in bytes of a single element

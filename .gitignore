@@ -33,6 +33,7 @@ cycloneiv_quartus/db/
 cycloneiv_quartus/incremental_db/
 cycloneiv_quartus/output_files/
 main.sof
+file_list.qsf
 result_*.txt
 output_*.txt
 .vscode/*

@@ -122,8 +122,7 @@ module uart_cpu #(
         .arempty ()
     );
 
-    UART_VHD_CPU #(
-    )uart_6502_1(
+    UART_VHD_CPU uart_6502_1(
         .CLK       (clk_i),
         .RST       ('0),
         .UART_TXD  (uart_tx_o),

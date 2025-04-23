@@ -1,5 +1,6 @@
 #!/bin/bash
 rm -f main.sof
+rm -f file_list.qsf
 rm -rf cycloneiv_quartus/db
 rm -rf cycloneiv_quartus/incremental_db
 rm -rf cycloneiv_quartus/output_files
@@ -28,6 +29,9 @@ echo -n ' ' >> version_string.svh
 date --date 'now' '+%a %b %d %r %Z %Y' | sed -e 's/$/"/' -e 's/,/","/g' >> version_string.svh
 ghdl --synth --out=verilog modules/uart_vhdl/*.vhd -e UART_VHD_CPU > uart_vhd_cpu.v
 #c:/intelFPGA_lite/20.1/quartus/bin64/quartus_sh --flow compile ../main.qpf
+cd ..
+./convert_filelist.sh rtl/rtl_filelist.txt --quartus
+cd rtl/
 /root/altera_lite/24.1std/quartus/bin/quartus_sh --flow compile ../cycloneiv_quartus/main.qpf
 mv ../cycloneiv_quartus/output_files/main.sof ../main.sof
 #/root/intelFPGA_lite/23.1std/quartus/bin/quartus_cpf  --option=bitstream_compression=off -c ../output_files/main.sof ../main.rbf

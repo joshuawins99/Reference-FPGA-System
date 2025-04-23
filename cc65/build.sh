@@ -2,7 +2,7 @@
 rm -f none.lib
 rm -f *.l *.m *.o *.c *.s *.h *.py *.out *.mem
 rm -f mem_init.mem
-cp /cc65/lib/none.lib .
+cp /share/cc65/lib/none.lib .
 cp ../C_Code/* .
 ca65 --cpu 65c02 crt0.s
 ca65 --cpu 65c02 irq.s

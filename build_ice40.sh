@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -f main.bin resized_flash.bin fpga_image.h
-python3 update_vhdl_params.py main_ice40.sv
+
 cd cc65
 ./build.sh
 cd ../rtl
@@ -24,7 +24,7 @@ fi
 #git rev-parse --verify HEAD | cut -c1-7 | xargs echo -n | sed -e 's/^/"/' >> version_string.svh
 echo -n ' ' >> version_string.svh
 date --date 'now' '+%a %b %d %r %Z %Y' | sed -e 's/$/"/' -e 's/,/","/g' >> version_string.svh
-ghdl --synth --out=verilog modules/uart_vhdl/*.vhd -e UART_VHD_CPU > uart_vhd_cpu.v
+
 FILELIST=$(../convert_filelist.sh rtl_filelist.txt)
 yosys -q -p "abc_new; read_verilog -sv -nooverwrite $FILELIST; hierarchy -top main_ice40; synth_ice40 -top main_ice40 -json main.json"
 nextpnr-ice40 --up5k --package sg48 --json main.json --pcf ../pin_config_ice40.pcf --asc main.asc --pcf-allow-unconstrained --randomize-seed --timing-allow-fail

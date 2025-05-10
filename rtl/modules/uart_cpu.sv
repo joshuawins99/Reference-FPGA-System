@@ -122,16 +122,22 @@ module uart_cpu #(
         .arempty ()
     );
 
-    UART_VHD_CPU uart_6502_1(
-        .CLK       (clk_i),
-        .RST       ('0),
-        .UART_TXD  (uart_tx_o),
-        .UART_RXD  (uart_rx_i),
-        .DOUT      (rx_out),
-        .DOUT_VLD  (rx_done),
-        .DIN       (transmit_data),
-        .DIN_VLD   (tx_start),
-        .DIN_RDY   (tx_busy)
+    uart #(
+        .ClkFreq         (FPGAClkSpeed),
+        .BaudRate        (UARTBaudRate),
+        .ParityBit       ("none"),
+        .UseDebouncer    (1),
+        .OversampleRate  (16)
+    ) uart_1 (
+        .clk_i           (clk_i),
+        .reset_i         ('0),
+        .uart_txd_o      (uart_tx_o),
+        .uart_rxd_i      (uart_rx_i),
+        .data_o          (rx_out),
+        .data_valid_o    (rx_done),
+        .data_i          (transmit_data),
+        .data_valid_i    (tx_start),
+        .data_in_ready_o (tx_busy)
     );
 
     assign data_o = data_o_reg;

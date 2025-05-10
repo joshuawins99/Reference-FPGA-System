@@ -26,7 +26,7 @@ echo -n ' ' >> version_string.svh
 date --date 'now' '+%a %b %d %r %Z %Y' | sed -e 's/$/"/' -e 's/,/","/g' >> version_string.svh
 
 FILELIST=$(../convert_filelist.sh rtl_filelist.txt)
-yosys -q -p "abc_new; read_verilog -sv -DECP5 -nooverwrite $FILELIST; hierarchy -top main_ecp5; synth_ecp5 -top main_ecp5 -json main.json"
+yosys -q -p "abc_new; read_verilog -sv -DUSB_UART -DECP5 -nooverwrite $FILELIST; hierarchy -top main_ecp5; synth_ecp5 -top main_ecp5 -json main.json"
 nextpnr-ecp5 --25k --package CABGA256 --speed 6 --json main.json --textcfg main.config --lpf ../pin_config_ecp5.lpf --lpf-allow-unconstrained --randomize-seed
 ecppack --compress --bit main.bit main.config
 rm -f main.config main.json

@@ -1,0 +1,11 @@
+../rtl/main_6502.sv 
+../rtl/main_rv32.sv 
+../rtl/modules/*.* 
+../rtl/modules/6502/* 
+../rtl/modules/picorv32/* 
+../rtl/modules/async_fifo/* 
+../rtl/modules/usb_serial/* 
+../rtl/modules/uart/*
+ecp5_dtr.sv
+main_ecp5.sv 
+pll_ecp5.v

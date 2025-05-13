@@ -1,6 +1,0 @@
-Warning: Feature 'abc_new' *
-Warning: Replacing memory * with list of registers*
-Warning: Yosys has only limited support for tri-state logic at the moment. (modules/usb_serial/usb_uart.v:*)
-Warning: reg '\data_reg_inputs' is assigned in a continuous assignment at main_6502.sv:*
-#io.c:*: Warning: Incompatible pointer conversion to 'char *(*)(char *)' from 'char *(*)(void)'
-#./ethernet.c:*: warning: while loop has empty body*

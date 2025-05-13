@@ -4,7 +4,9 @@ module main_cycloneiv (
     output logic ex_data_o,
     output logic usb_dp_pull,
     inout  wire  usb_dp,
-    inout  wire  usb_dn
+    inout  wire  usb_dn,
+    input  logic uart_rx_i,
+    output logic uart_tx_o
 );
     localparam FPGAClkSpeed  = 50000000;
     localparam BaudRateCPU   = 230400;
@@ -19,7 +21,7 @@ module main_cycloneiv (
     );
 
     logic [7:0] ex_data;
-    assign ex_data_o = ex_data[0];
+    assign ex_data_o = !ex_data[0];
 
     main_6502 #(
         .FPGAClkSpeed        (FPGAClkSpeed),
@@ -36,8 +38,8 @@ module main_cycloneiv (
         .reset_i             ('0),
         .ex_data_i           ('0),
         .ex_data_o           (ex_data),
-        .uart_tx_o           (),
-        .uart_rx_i           (),
+        .uart_tx_o           (uart_tx_o),
+        .uart_rx_i           (uart_rx_i),
         .usb_dp_pull         (usb_dp_pull),
         .usb_dp              (usb_dp),
         .usb_dn              (usb_dn),

@@ -75,7 +75,7 @@ build_artix7:
 	@make .version
 	@make .build_cc65
 	@(cd $(ARTIX7_DIR) && \
-	LD_PRELOAD=/lib/x86_64-linux-gnu/libudev.so.1 $(VIVADO_ROOT_DIR)/bin/vivado -mode batch -source create_project.tcl && \
+	LD_PRELOAD=libudev.so.1 $(VIVADO_ROOT_DIR)/bin/vivado -mode batch -source create_project.tcl && \
 	mv main.bin $(BASE_DIR)/main.bin)
 
 .version:

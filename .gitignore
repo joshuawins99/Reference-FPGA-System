@@ -36,5 +36,16 @@ main.sof
 file_list.qsf
 result_*.txt
 output_*.txt
+artix7/.Xil
+artix7/main.cache
+artix7/main.hw
+artix7/main.ip_user_files
+artix7/main.runs
+artix7/*.rpt
+artix7/*.bit
+artix7/*.bin
+artix7/*.xpr
+artix7/*.jou
+artix7/*.log
 .vscode/*
 

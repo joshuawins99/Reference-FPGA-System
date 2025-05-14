@@ -210,6 +210,7 @@ module main_6502 #(
         .data_width          (data_width)
     ) version_string_1 (
         .clk_i               (clk_i),
+        .reset_i             (),
         .address_i           (address_reg),
         .data_i              (cpu_data_o),
         .rd_wr_i             (cpu_we_o),

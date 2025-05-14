@@ -6,7 +6,7 @@ module bram_contained #(
     parameter ram_size = 64,
     parameter pre_fill = 0,
     parameter pre_fill_start = 0,
-    parameter pre_fill_file
+    parameter pre_fill_file = ""
 ) (
     input logic clk,
     input logic [address_width-1:0] addr,

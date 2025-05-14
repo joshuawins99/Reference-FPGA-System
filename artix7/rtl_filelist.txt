@@ -1,0 +1,13 @@
+../rtl/main_6502.sv
+../rtl/main_rv32.sv
+../rtl/modules/*.*
+../rtl/modules/6502/*
+../rtl/modules/picorv32/*
+../rtl/modules/async_fifo/*
+../rtl/modules/usb_serial/*
+../rtl/modules/uart/*
+../cc65/mem_init.mem
+pll_artix7.v
+pll_artix7_clk_wiz.v
+xadc_wiz_0.v
+main_artix7.sv

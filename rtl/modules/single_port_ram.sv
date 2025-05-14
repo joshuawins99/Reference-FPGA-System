@@ -4,7 +4,7 @@ module bram_sp #(
     parameter ram_size = 512,
     parameter pre_fill = 0,
     parameter pre_fill_start = 0,
-    parameter pre_fill_file
+    parameter pre_fill_file = ""
 ) (
     input   wire                clk,
     input   wire                wr,

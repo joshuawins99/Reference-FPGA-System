@@ -137,7 +137,9 @@ module uart_cpu #(
         .data_valid_o    (rx_done),
         .data_i          (transmit_data),
         .data_valid_i    (tx_start),
-        .data_in_ready_o (tx_busy)
+        .data_in_ready_o (tx_busy),
+        .frame_error_o   (),
+        .parity_error_o  ()
     );
 
     assign data_o = data_o_reg;

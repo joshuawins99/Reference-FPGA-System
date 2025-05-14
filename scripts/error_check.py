@@ -3,25 +3,35 @@
 import subprocess
 import sys
 import fnmatch
+import re
 
 def load_mask_patterns(mask_file):
     with open(mask_file, 'r') as file:
         patterns = file.read().splitlines()
     return patterns
 
+def shell_to_regex(shell_pattern):
+    """Convert fnmatch-style pattern to proper regex."""
+    shell_pattern = re.escape(shell_pattern)  # Escape special characters
+    shell_pattern = shell_pattern.replace(r'\*', '.*')  # Convert '*' to regex '.*'
+    return shell_pattern
+
 def filter_output(output, patterns):
     filtered_lines = []
     found_patterns = set()
+
+    regex_patterns = {pattern: re.compile(shell_to_regex(pattern.lstrip("#"))) for pattern in patterns}
+
     for line in output.splitlines():
         matched = False
-        for pattern in patterns:
-            is_intermittent = pattern.startswith("#")
-            if fnmatch.fnmatch(line, pattern.lstrip("#")):
+        for pattern, regex in regex_patterns.items():
+            if regex.search(line):  # Allow partial matches
                 matched = True
                 found_patterns.add(pattern)
                 break
         if not matched:
             filtered_lines.append(line)
+
     return '\n'.join(filtered_lines), found_patterns
 
 def search_for_warnings_and_errors(output, result_file, patterns):

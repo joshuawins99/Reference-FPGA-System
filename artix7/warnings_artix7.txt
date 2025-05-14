@@ -1,0 +1,15 @@
+#io.c:*: Warning: Incompatible pointer conversion to 'char *(*)(char *)' from 'char *(*)(void)'
+WARNING: [Vivado 12-7122] Auto Incremental Compile:: No reference checkpoint was found in run synth_1. Auto-incremental flow will not be run, the standard flow will be run instead.
+WARNING: [Synth 8-151] case item 6'b000111 is unreachable [*/6502/cpu_65c02.v:1080]
+Synthesis finished with 0 errors, 0 critical warnings and * warnings.
+INFO: [Project 1-461] DRC finished with 0 Errors
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors*
+INFO: [Vivado 12-3199] DRC finished with 0 Errors, * Warnings
+* Infos, * Warnings, 0 Critical Warnings and 0 Errors encountered.
+WARNING: [DRC CFGBVS-1] Missing CFGBVS and CONFIG_VOLTAGE Design Properties*
+WARNING: [DRC CHECK-3] Report rule limit reached*
+WARNING: [DRC REQP-1839] RAMB36*
+WARNING: [Synth 8-7129] Port data_i[*] in module version_string is either unconnected or has no load
+WARNING: [Synth 8-7129] Port clk_i in module version_string is either unconnected or has no load
+WARNING: [Synth 8-7129] Port reset_i in module version_string is either unconnected or has no load

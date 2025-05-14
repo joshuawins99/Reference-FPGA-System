@@ -3,7 +3,7 @@
 This is an FPGA Register System that can communicate with a host computer or mcu. It also has the ability to run standalone through the built in 6502 CPU core. The program for this CPU core is written in C using the CC65 compiler. With this, accessory modules can be written to share the same address and data bus that the cpu is on allowing for communication with these custom modules. The interfaces provided for communication with a host include: UART, USB, Ethernet (Through Wiznet W5500), and as a Slave SPI device (uses different module).
 
 ## Compatibility
-This project was aimed to provide compatibility across a wide range of FPGAs from various vendors. Example build scripts given here in which this system was tested on include: Lattice ECP5 using yosys/nextpnr, Lattice ICE40 using yosys/nextpnr, and Intel Cyclone IV E using Quartus Prime Lite 23.1
+This project was aimed to provide compatibility across a wide range of FPGAs from various vendors. Example build scripts given here in which this system was tested on include: Lattice ECP5 using yosys/nextpnr, Lattice ICE40 using yosys/nextpnr, Intel Cyclone IV E using Quartus Prime Lite 23.1, and Xilinx Artix 7 using Vivado 2022.1.
 
 ## Building
 To build run make to get preconfigured targets:
@@ -13,6 +13,7 @@ Available make targets:
  build_ecp5      - Build for Lattice ECP5
  build_ice40     - Build for Lattice ICE40
  build_cycloneiv - Build for Altera Cyclone IV
+ build_artix7    - Build for Xilinx Artix 7
  clean           - Remove Build Files
 ```
 ## How do I use it?

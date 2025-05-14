@@ -1,6 +1,7 @@
 BASE_DIR := $(shell pwd)
 SCRIPTS_DIR := scripts
 QUARTUS_ROOT_DIR := /root/altera_lite/24.1std/quartus
+VIVADO_ROOT_DIR := /root/Xilinx/Vivado/2022.1
 CC65_DIR := cc65
 ECP5_DIR := ecp5
 ECP5_FILELIST := rtl_filelist.txt
@@ -8,6 +9,7 @@ ICE40_DIR := ice40
 ICE40_FILELIST := rtl_filelist.txt
 CYCLONEIV_DIR := cycloneiv_quartus
 CYCLONEIV_FILELIST := rtl_filelist.txt
+ARTIX7_DIR := artix7
 VERSION_FILE = rtl/version_string.svh
 
 # Default target: Show available options
@@ -16,6 +18,7 @@ all:
 	@echo " build_ecp5      - Build for Lattice ECP5"
 	@echo " build_ice40     - Build for Lattice ICE40"
 	@echo " build_cycloneiv - Build for Altera Cyclone IV"
+	@echo " build_artix7    - Build for Xilinx Artix 7"
 	@echo " clean           - Remove Build Files"
 
 build_ecp5:
@@ -63,6 +66,18 @@ build_cycloneiv:
 	$(QUARTUS_ROOT_DIR)/bin/quartus_sh --flow compile main.qpf && \
 	mv output_files/main.sof $(BASE_DIR)/main.sof)
 
+build_artix7:
+	@echo "Building for Artix 7...\n"
+	@make .build_artix7_int 2>&1 | python3 $(SCRIPTS_DIR)/error_check.py "make" $(ARTIX7_DIR)/warnings_artix7.txt \
+	$(ARTIX7_DIR)/output_artix7.txt $(ARTIX7_DIR)/result_artix7.txt ""
+
+.build_artix7_int:
+	@make .version
+	@make .build_cc65
+	@(cd $(ARTIX7_DIR) && \
+	LD_PRELOAD=/lib/x86_64-linux-gnu/libudev.so.1 $(VIVADO_ROOT_DIR)/bin/vivado -mode batch -source create_project.tcl && \
+	mv main.bin $(BASE_DIR)/main.bin)
+
 .version:
 	@echo -n '`define version_string ' > $(VERSION_FILE)
 	@if [ "$(VERSION_TYPE)" = "REL" ]; then \
@@ -83,10 +98,12 @@ build_cycloneiv:
 # Clean target
 clean:
 	@echo "Cleaning up...\n"
-	@rm -rf main.bin main.sof fpga_image.h resized_flash.bin $(VERSION_FILE)
+	@rm -rf main.bin main.sof fpga_image.h resized_flash.bin *.jou *.log $(VERSION_FILE)
 	@(cd $(ECP5_DIR) && rm -rf output_ecp5.txt result_ecp5.txt)
 	@(cd $(ICE40_DIR) && rm -rf output_ice40.txt result_ice40.txt)
 	@(cd $(CYCLONEIV_DIR) && rm -rf db incremental_db output_files file_list.qsf output_cycloneiv.txt result_cycloneiv.txt)
 	@(cd $(CC65_DIR) && rm -rf *.c *.h *.py *.o *.s *.l *.m *.lib *.mem *.out)
+	@(cd $(ARTIX7_DIR) && rm -rf *.jou *.log *.str *.rpt *.bit *.bin *.xpr .Xil *.cache *.hw *.gen *.ip_user_files *.sim \
+	*.runs *.srcs output_artix7.txt result_artix7.txt)
 
-.PHONY: all build_ecp5 build_ice40 build_cycloneiv clean
+.PHONY: all build_ecp5 build_ice40 build_cycloneiv build_artix7 clean

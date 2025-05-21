@@ -1,5 +1,13 @@
 create_clock -period 10.000 [get_ports clk_i]
 
+set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 66 [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property CFGBVS VCCO [current_design]
+set_property BITSTREAM.CONFIG.SPI_32BIT_ADDR NO [current_design]
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 2 [current_design]
+set_property BITSTREAM.CONFIG.SPI_FALL_EDGE YES [current_design]
+
 set_property PACKAGE_PIN N14 [get_ports clk_i]
 set_property IOSTANDARD LVCMOS33 [get_ports clk_i]
 

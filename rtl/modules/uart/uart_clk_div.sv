@@ -3,7 +3,6 @@ module uart_clk_div #(
     parameter DivMarkPos = 1
 )(
     input  logic clk_i,
-    input  logic reset_i,
     input  logic clear_i,
     input  logic enable_i,
     output logic div_mark_o

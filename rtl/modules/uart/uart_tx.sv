@@ -36,7 +36,6 @@ module uart_tx #(
         .DivMarkPos (1)
     ) tx_clk_divider_1 (
         .clk_i      (clk_i),
-        .reset_i    (reset_i),
         .clear_i    (tx_clk_div_clr),
         .enable_i   (uart_clk_en_i),
         .div_mark_o (tx_clk_en)

@@ -37,7 +37,6 @@ module uart #(
         .DivMarkPos (os_clk_div_val-1)
     ) uart_clk_div_1 (
         .clk_i      (clk_i),
-        .reset_i    (reset_i),
         .clear_i    (reset_i),
         .enable_i   (1'b1),
         .div_mark_o (os_clk_en)

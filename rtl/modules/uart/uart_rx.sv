@@ -38,7 +38,6 @@ module uart_rx #(
         .DivMarkPos (3)
     ) rx_clk_divider_1 (
         .clk_i      (clk_i),
-        .reset_i    (reset_i),
         .enable_i   (uart_clk_en_i),
         .clear_i    (fsm_idle),
         .div_mark_o (rx_clk_en)

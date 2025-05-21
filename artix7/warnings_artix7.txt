@@ -7,9 +7,22 @@ WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
 INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors*
 INFO: [Vivado 12-3199] DRC finished with 0 Errors, * Warnings
 * Infos, * Warnings, 0 Critical Warnings and 0 Errors encountered.
-WARNING: [DRC CFGBVS-1] Missing CFGBVS and CONFIG_VOLTAGE Design Properties*
 WARNING: [DRC CHECK-3] Report rule limit reached*
 WARNING: [DRC REQP-1839] RAMB36*
 WARNING: [Synth 8-7129] Port data_i[*] in module version_string is either unconnected or has no load
 WARNING: [Synth 8-7129] Port clk_i in module version_string is either unconnected or has no load
 WARNING: [Synth 8-7129] Port reset_i in module version_string is either unconnected or has no load
+WARNING: [Synth 8-7129] Port data_i[*] in module artix7_xadc is either unconnected or has no load
+WARNING: [Synth 8-7129] Port addr[15] in module bram_sp is either unconnected or has no load
+WARNING: [Synth 8-7129] Port addr[14] in module bram_sp is either unconnected or has no load
+#WARNING: [Synth 8-7129] Port usb_dp in module main_6502 is either unconnected or has no load
+#WARNING: [Synth 8-7129] Port usb_dn in module main_6502 is either unconnected or has no load
+#WARNING: [Synth 8-7129] Port clk_48_i in module main_6502 is either unconnected or has no load
+WARNING: [Synth 8-7071] port 'SYNC' of module 'cpu_65c02' is unconnected for instance 'cpu1' [*main_6502.sv:*]
+WARNING: [Synth 8-7023] instance 'cpu1' of module 'cpu_65c02' has 10 connections declared, but only 9 given [*main_6502.sv:*]
+WARNING: [Synth 8-7129] Port rclk in module fifomem__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port rclken in module fifomem__parameterized0 is either unconnected or has no load
+WARNING: [Synth 8-7129] Port rclk in module fifomem is either unconnected or has no load
+WARNING: [Synth 8-7129] Port rclken in module fifomem is either unconnected or has no load
+WARNING: [Synth 8-3936] Found unconnected internal register 'xadc_temp_int_reg' and it is trimmed from '12' to '11' bits. [*/artix7_xadc.sv:*]
+

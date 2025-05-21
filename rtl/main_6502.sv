@@ -66,7 +66,10 @@ module main_6502 #(
         adc_e,
         timer_e,
     `ifdef ECP5
-        ecp5_dtr_e,
+        temp_e,
+    `endif
+    `ifdef ARTIX7
+        temp_e,
     `endif
         special_e,
         num_entries
@@ -84,7 +87,10 @@ module main_6502 #(
         add_address('h9220, 'h9224),                        //adc_e
         add_address('h9300, 'h9302),                        //timer_e
     `ifdef ECP5
-        add_address('h9400, 'h9400),                        //ecp5_dtr_e
+        add_address('h9400, 'h9400),                        //temp_e
+    `endif
+    `ifdef ARTIX7
+        add_address('h9400, 'h9400),                        //temp_e
     `endif
         add_address('hFFFA, 'hFFFF)                         //special_e
     };
@@ -331,7 +337,7 @@ module main_6502 #(
 
 `ifdef ECP5
     ecp5_dtr #(
-        .BaseAddress   (get_address_start(ecp5_dtr_e)),
+        .BaseAddress   (get_address_start(temp_e)),
         .address_width (16),
         .data_width    (8)
     ) ecp5_dtr_inst (
@@ -339,7 +345,22 @@ module main_6502 #(
         .reset_i       (reset),
         .address_i     (address),
         .data_i        (cpu_data_o),
-        .data_o        (data_reg_inputs[ecp5_dtr_e]),
+        .data_o        (data_reg_inputs[temp_e]),
+        .rd_wr_i       (cpu_we_o)
+    );
+`endif
+
+`ifdef ARTIX7
+    artix7_xadc #(
+        .BaseAddress   (get_address_start(temp_e)),
+        .address_width (16),
+        .data_width    (8)
+    ) ecp5_dtr_inst (
+        .clk_i         (clk_i),
+        .reset_i       (reset),
+        .address_i     (address),
+        .data_i        (cpu_data_o),
+        .data_o        (data_reg_inputs[temp_e]),
         .rd_wr_i       (cpu_we_o)
     );
 `endif

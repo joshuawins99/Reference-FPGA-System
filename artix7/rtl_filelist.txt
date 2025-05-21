@@ -10,4 +10,5 @@
 pll_artix7.v
 pll_artix7_clk_wiz.v
 xadc_wiz_0.v
+artix7_xadc.sv
 main_artix7.sv

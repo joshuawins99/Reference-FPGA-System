@@ -109,6 +109,8 @@ if { ! [string equal $top_module ""] } {
     set_property top $top_module [get_filesets sources_1]
 }
 
+set_property verilog_define {ARTIX7} [get_filesets sources_1]
+
 set_property STEPS.SYNTH_DESIGN.ARGS.RETIMING true [get_runs synth_1]
 set_property STEPS.SYNTH_DESIGN.ARGS.RESOURCE_SHARING auto [get_runs synth_1]
 
@@ -118,6 +120,8 @@ open_run synth_1 -name netlist_1
 report_timing_summary -delay_type max -report_unconstrained -check_timing_verbose \
 -max_paths 10 -input_pins -file syn_timing.rpt
 report_power -file syn_power.rpt
+report_utilization -file syn_util.rpt
+report_utilization -append -hierarchical -file syn_util.rpt
 
 set_property strategy Performance_Explore [get_runs impl_1]
 
@@ -128,5 +132,7 @@ place_design -timing_driven
 report_timing_summary -delay_type min_max -report_unconstrained \
 -check_timing_verbose -max_paths 10 -input_pins -file imp_timing.rpt
 report_power -file imp_power.rpt
+report_utilization -file imp_util.rpt
+report_utilization -append -hierarchical -file imp_util.rpt
 
 write_bitstream -force -bin_file $project_name

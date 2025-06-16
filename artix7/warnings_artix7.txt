@@ -25,4 +25,3 @@ WARNING: [Synth 8-7129] Port rclken in module fifomem__parameterized0 is either 
 WARNING: [Synth 8-7129] Port rclk in module fifomem is either unconnected or has no load
 WARNING: [Synth 8-7129] Port rclken in module fifomem is either unconnected or has no load
 WARNING: [Synth 8-3936] Found unconnected internal register 'xadc_temp_int_reg' and it is trimmed from '12' to '11' bits. [*/artix7_xadc.sv:*]
-

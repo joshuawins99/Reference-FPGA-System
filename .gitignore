@@ -32,6 +32,9 @@ rtl/version_string.svh
 cycloneiv_quartus/db/
 cycloneiv_quartus/incremental_db/
 cycloneiv_quartus/output_files/
+cycloneiv_quartus/*.qsf
+cycloneiv_quartus/*.qpf
+cycloneiv_quartus/*.qws
 main.sof
 file_list.qsf
 result_*.txt

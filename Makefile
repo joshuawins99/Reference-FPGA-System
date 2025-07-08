@@ -62,7 +62,7 @@ build_cycloneiv:
 	@make .version
 	@make .build_cc65
 	@(cd $(CYCLONEIV_DIR) && \
-	$(BASE_DIR)/$(SCRIPTS_DIR)/convert_filelist.sh rtl_filelist.txt --quartus && \
+	$(QUARTUS_ROOT_DIR)/bin/quartus_sh -t create_project.tcl && \
 	$(QUARTUS_ROOT_DIR)/bin/quartus_sh --flow compile main.qpf && \
 	mv output_files/main.sof $(BASE_DIR)/main.sof)
 
@@ -101,7 +101,7 @@ clean:
 	@rm -rf main.bin main.sof fpga_image.h resized_flash.bin *.jou *.log $(VERSION_FILE)
 	@(cd $(ECP5_DIR) && rm -rf output_ecp5.txt result_ecp5.txt)
 	@(cd $(ICE40_DIR) && rm -rf output_ice40.txt result_ice40.txt)
-	@(cd $(CYCLONEIV_DIR) && rm -rf db incremental_db output_files file_list.qsf output_cycloneiv.txt result_cycloneiv.txt)
+	@(cd $(CYCLONEIV_DIR) && rm -rf db incremental_db output_files *.qsf *.qpf *.qws output_cycloneiv.txt result_cycloneiv.txt)
 	@(cd $(CC65_DIR) && rm -rf *.c *.h *.py *.o *.s *.l *.m *.lib *.mem *.out)
 	@(cd $(ARTIX7_DIR) && rm -rf *.jou *.log *.str *.rpt *.bit *.bin *.xpr .Xil *.cache *.hw *.gen *.ip_user_files *.sim \
 	*.runs *.srcs output_artix7.txt result_artix7.txt)

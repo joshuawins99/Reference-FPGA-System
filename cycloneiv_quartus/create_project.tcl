@@ -23,6 +23,9 @@ set device_family "Cyclone IV E"
 
 # Part Number
 set part_number "EP4CE6E22C8"
+
+# Pin Config File
+set pin_config_file "pin_config_cycloneiv.tcl"
 #------------------------------------------------------------------------------
 
 project_new $project_path/$project_name -overwrite
@@ -51,6 +54,8 @@ foreach file $filelist {
 }
 
 set_global_assignment -name SDC_FILE $sdc_file
+
+source $pin_config_file
 
 #set_global_assignment -name SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 
